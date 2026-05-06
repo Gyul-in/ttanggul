@@ -1,33 +1,36 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { NavigationContainer } from '@react-navigation/native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import RootNavigator from './src/navigation/RootNavigator';
 
-// Prevent auto hide while fonts are loading
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
-  const [loaded, error] = useFonts({
+  const [fontsLoaded] = useFonts({
     'Pretendard-Regular': require('./src/assets/fonts/Pretendard-Regular.otf'),
+    'Pretendard-Medium': require('./src/assets/fonts/Pretendard-Medium.otf'),
     'Pretendard-SemiBold': require('./src/assets/fonts/Pretendard-SemiBold.otf'),
   });
 
-  useEffect(() => {
-    if (loaded || error) {
-      SplashScreen.hideAsync();
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
     }
-  }, [loaded, error]);
+  }, [fontsLoaded]);
 
-  if (!loaded && !error) {
+  if (!fontsLoaded) {
     return null;
   }
 
   return (
-    <NavigationContainer>
-      <RootNavigator />
-      <StatusBar style="auto" />
-    </NavigationContainer>
+    <SafeAreaProvider onLayout={onLayoutRootView}>
+      <NavigationContainer>
+        <RootNavigator />
+        <StatusBar style="auto" />
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
