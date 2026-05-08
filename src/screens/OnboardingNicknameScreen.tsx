@@ -221,6 +221,7 @@ const styles = StyleSheet.create({
 
   /* 피그마 layout_OLRUPW: padding 15 16 / Brown/200 bg / borderRadius 8 */
   textInput: {
+    height: 54, // 고정 높이 - 입력 전후 크기 변동 방지
     backgroundColor: theme.colors.brown200,
     borderRadius: 8,
     paddingHorizontal: 16,

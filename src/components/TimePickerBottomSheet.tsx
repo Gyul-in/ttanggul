@@ -191,7 +191,6 @@ const styles = StyleSheet.create({
     paddingTop: 14,
     paddingHorizontal: 20,
     paddingBottom: 16,
-    gap: 24,
     alignItems: 'center',
   },
   // 피그마: width 78, height 5, borderRadius 999, Brown/200
@@ -208,12 +207,14 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     color: theme.colors.black,
     alignSelf: 'flex-start',
+    marginTop: 24, // handle과 title 사이 gap
   },
   // 피그마: row, gap: 20px
   pickerRow: {
     flexDirection: 'row',
     gap: 20,
     alignSelf: 'stretch',
+    marginTop: 24, // title과 pickerRow 사이 gap
   },
   // 피그마: CTA btn_L — height 56, Gray/900, borderRadius 12
   ctaButton: {
@@ -223,6 +224,7 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 24, // pickerRow와 ctaButton 사이 gap
   },
   ctaButtonText: {
     ...theme.typography.bodyXL_SB,
