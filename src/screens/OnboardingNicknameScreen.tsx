@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../theme';
+import { AppIcon } from '../components/AppIcon';
 
 export default function OnboardingNicknameScreen({ navigation }: any) {
   const [nickname, setNickname] = useState('');
@@ -35,7 +36,7 @@ export default function OnboardingNicknameScreen({ navigation }: any) {
             {/* 상단 네비 바 */}
             <View style={styles.navBar}>
               <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                <Text style={styles.backButtonText}>←</Text>
+                <AppIcon name="chevron-left" size={24} color={theme.colors.black} />
               </TouchableOpacity>
             </View>
 
@@ -134,7 +135,6 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
   },
   backButton: { padding: 10, marginLeft: -10 },
-  backButtonText: { fontSize: 24, color: theme.colors.gray900 },
 
   /* 피그마 layout_8N33IZ: padding 0 20px */
   scrollContent: {

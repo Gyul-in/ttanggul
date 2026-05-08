@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../theme';
+import { AppIcon } from '../components/AppIcon';
 
 const TAGS = [
   { id: 'sympathy', label: '#공감', desc: '내 마음이랑 똑같은 글이 필요할 때' },
@@ -40,7 +41,7 @@ export default function OnboardingPreferenceScreen({ navigation }: any) {
         {/* Top Navigation Bar */}
         <View style={styles.navBar}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Text style={styles.backButtonText}>←</Text>
+            <AppIcon name="chevron-left" size={24} color={theme.colors.black} />
           </TouchableOpacity>
         </View>
 
@@ -110,7 +111,6 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
   },
   backButton: { padding: 10, marginLeft: -10 },
-  backButtonText: { fontSize: 24, color: theme.colors.gray900 },
   scrollView: { flex: 1 },
   scrollContent: {
     paddingHorizontal: 20,

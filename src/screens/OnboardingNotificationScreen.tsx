@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../theme';
+import { AppIcon } from '../components/AppIcon';
 import TimePickerBottomSheet from '../components/TimePickerBottomSheet';
 
 const OPTIONS = [
@@ -47,7 +48,7 @@ export default function OnboardingNotificationScreen({ navigation }: any) {
         {/* Top Navigation Bar */}
         <View style={styles.navBar}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Text style={styles.backButtonText}>←</Text>
+            <AppIcon name="chevron-left" size={24} color={theme.colors.black} />
           </TouchableOpacity>
         </View>
 
@@ -132,7 +133,6 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
   },
   backButton: { padding: 10, marginLeft: -10 },
-  backButtonText: { fontSize: 24, color: theme.colors.gray900 },
   content: {
     flex: 1,
     paddingHorizontal: 20,
