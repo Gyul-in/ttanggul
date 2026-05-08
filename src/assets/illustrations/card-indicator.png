@@ -1,0 +1,9 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 70 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Indicator">
+<circle id="Frame" cx="3" cy="3" r="3" fill="var(--fill-0, #EDE2CE)"/>
+<circle id="Frame_2" cx="19" cy="3" r="3" fill="var(--fill-0, #A7784F)"/>
+<circle id="Frame_3" cx="35" cy="3" r="3" fill="var(--fill-0, #EDE2CE)"/>
+<circle id="Frame_4" cx="51" cy="3" r="3" fill="var(--fill-0, #EDE2CE)"/>
+<circle id="Frame_5" cx="67" cy="3" r="3" fill="var(--fill-0, #EDE2CE)"/>
+</g>
+</svg>
