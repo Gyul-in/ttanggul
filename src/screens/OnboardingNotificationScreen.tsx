@@ -39,7 +39,7 @@ export default function OnboardingNotificationScreen({ navigation }: any) {
   };
 
   const handleComplete = () => {
-    navigation.navigate('Main');
+    navigation.navigate('Home');
   };
 
   return (
