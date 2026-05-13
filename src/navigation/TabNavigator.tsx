@@ -1,12 +1,12 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { StyleSheet, View, Pressable, Dimensions } from 'react-native';
+import { StyleSheet, View, Pressable, Dimensions, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../theme';
 import { AppIcon } from '../components/AppIcon';
-import { AppText } from '../components/AppText';
+import { useUI } from '../context/UIContext';
 import HomeScreen from '../screens/HomeScreen';
-import SaveScreen from '../screens/SaveScreen';
+import SaveStackNavigator from './SaveStackNavigator';
 import SettingsScreen from '../screens/SettingsScreen';
 
 const Tab = createBottomTabNavigator();
@@ -30,7 +30,10 @@ const TAB_ITEMS: TabItem[] = [
 ];
 
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
+  const { isTabBarVisible } = useUI();
   const insets = useSafeAreaInsets();
+
+  if (!isTabBarVisible) return null;
   const screenWidth = Dimensions.get('window').width;
   const scale = screenWidth / DESIGN_WIDTH;
   const outerPad = Math.round(DESIGN_OUTER_PAD * scale);
@@ -65,9 +68,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
                 accessibilityState={isFocused ? { selected: true } : {}}
               >
                 <AppIcon name={tab.icon} size={24} color={color} />
-                <AppText variant="caption" color={color}>
-                  {tab.label}
-                </AppText>
+                <Text style={[styles.label, { color }]}>{tab.label}</Text>
               </Pressable>
             );
           })}
@@ -84,7 +85,7 @@ export default function TabNavigator() {
       tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{ headerShown: false }}
     >
-      <Tab.Screen name="Save" component={SaveScreen} />
+      <Tab.Screen name="Save" component={SaveStackNavigator} />
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
@@ -119,5 +120,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 4,
     rowGap: 4,
+  },
+  label: {
+    fontFamily: 'Pretendard-Medium',
+    fontSize: 12,
+    lineHeight: 18,
+    marginTop: 4,
   },
 });
