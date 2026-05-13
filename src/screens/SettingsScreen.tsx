@@ -99,8 +99,10 @@ export default function SettingsScreen({ navigation }: Props) {
   const [feedbackSheetVisible, setFeedbackSheetVisible] = useState(false);
   const toastOpacity = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
+  const [toastMessage, setToastMessage] = useState('변경했어요!');
 
-  const showToast = () => {
+  const showToast = (message: string = '변경했어요!') => {
+    setToastMessage(message);
     Animated.sequence([
       Animated.timing(toastOpacity, { toValue: 1, duration: 200, useNativeDriver: true }),
       Animated.delay(1800),
@@ -280,11 +282,12 @@ export default function SettingsScreen({ navigation }: Props) {
       <FeedbackBottomSheet
         visible={feedbackSheetVisible}
         onClose={() => setFeedbackSheetVisible(false)}
+        onSend={() => showToast('소중한 의견 감사합니다.')}
       />
       <Animated.View style={[styles.toastContainer, { opacity: toastOpacity }]} pointerEvents="none">
         <View style={styles.toastPill}>
           <AppIcon name="check" size={24} color={colors.white} />
-          <AppText variant="bodyM_SB" style={styles.toastText}>변경했어요!</AppText>
+          <AppText variant="bodyM_SB" style={styles.toastText}>{toastMessage}</AppText>
         </View>
       </Animated.View>
     </SafeAreaView>

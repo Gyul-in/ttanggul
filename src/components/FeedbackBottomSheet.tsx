@@ -18,9 +18,10 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 type Props = {
   visible: boolean;
   onClose: () => void;
+  onSend?: () => void;
 };
 
-export default function FeedbackBottomSheet({ visible, onClose }: Props) {
+export default function FeedbackBottomSheet({ visible, onClose, onSend }: Props) {
   const insets = useSafeAreaInsets();
   const [text, setText] = useState('');
   const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
@@ -44,6 +45,12 @@ export default function FeedbackBottomSheet({ visible, onClose }: Props) {
   const handleClose = () => {
     setText('');
     onClose();
+  };
+
+  const handleSend = () => {
+    setText('');
+    onClose();
+    onSend?.();
   };
 
   return (
@@ -96,7 +103,7 @@ export default function FeedbackBottomSheet({ visible, onClose }: Props) {
             <TouchableOpacity
               style={styles.sendBtn}
               activeOpacity={0.7}
-              onPress={handleClose}
+              onPress={handleSend}
             >
               <AppText variant="bodyXL_SB" style={styles.sendBtnText}>
                 보내기
