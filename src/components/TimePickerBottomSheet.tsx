@@ -201,7 +201,7 @@ export default function TimePickerBottomSheet({ visible, onClose, onConfirm }: P
 
           {/* 완료 버튼 */}
           <TouchableOpacity style={styles.ctaButton} onPress={handleConfirm}>
-            <Text style={styles.ctaButtonText}>완료</Text>
+            <Text style={styles.ctaButtonText}>변경하기</Text>
           </TouchableOpacity>
         </Animated.View>
       </View>
