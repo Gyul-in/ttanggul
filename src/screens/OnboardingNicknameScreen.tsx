@@ -35,9 +35,6 @@ export default function OnboardingNicknameScreen({ navigation }: any) {
 
             {/* 상단 네비 바 */}
             <View style={styles.navBar}>
-              <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                <AppIcon name="chevron-left" size={24} color={theme.colors.black} />
-              </TouchableOpacity>
             </View>
 
             {/*
@@ -97,24 +94,23 @@ export default function OnboardingNicknameScreen({ navigation }: any) {
                 </View>
               </View>
             </View>
-
-            {/* 하단 다음 버튼 */}
-            <View style={styles.bottomContainer}>
-              <TouchableOpacity
-                style={[
-                  styles.ctaButton,
-                  nickname.trim().length === 0 && styles.ctaButtonDisabled,
-                ]}
-                onPress={handleNext}
-                disabled={nickname.trim().length === 0}
-              >
-                <Text style={styles.ctaButtonText}>다음</Text>
-              </TouchableOpacity>
-            </View>
-
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
+
+      {/* 하단 다음 버튼 - KeyboardAvoidingView 밖으로 이동하여 고정 */}
+      <View style={styles.bottomContainer}>
+        <TouchableOpacity
+          style={[
+            styles.ctaButton,
+            nickname.trim().length === 0 && styles.ctaButtonDisabled,
+          ]}
+          onPress={handleNext}
+          disabled={nickname.trim().length === 0}
+        >
+          <Text style={styles.ctaButtonText}>다음</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,12 @@ import {
   Modal,
   Pressable,
   ScrollView,
+  Animated,
+  Dimensions,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 import { theme } from '../theme';
 
 /** 아이템 1개 높이 */
@@ -130,9 +135,28 @@ type Props = {
 };
 
 export default function TimePickerBottomSheet({ visible, onClose, onConfirm }: Props) {
+  const insets = useSafeAreaInsets();
   const [meridiem, setMeridiem] = useState(0); // 0=AM, 1=PM
   const [hour, setHour] = useState(10);         // 기본 11시 (0-based → index 10)
   const [minute, setMinute] = useState(0);      // 기본 00분
+
+  const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
+
+  useEffect(() => {
+    if (visible) {
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(slideAnim, {
+        toValue: SCREEN_HEIGHT,
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [visible, slideAnim]);
 
   const handleConfirm = useCallback(() => {
     const timeStr = `${MERIDIEM[meridiem]} ${HOURS[hour]}:${MINUTES[minute]}`;
@@ -143,7 +167,7 @@ export default function TimePickerBottomSheet({ visible, onClose, onConfirm }: P
     <Modal
       visible={visible}
       transparent
-      animationType="slide"
+      animationType="none"
       statusBarTranslucent
       onRequestClose={onClose}
     >
@@ -153,7 +177,15 @@ export default function TimePickerBottomSheet({ visible, onClose, onConfirm }: P
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
 
         {/* 바텀 시트 본체 */}
-        <View style={styles.sheet}>
+        <Animated.View
+          style={[
+            styles.sheet,
+            {
+              transform: [{ translateY: slideAnim }],
+              paddingBottom: insets.bottom + 16,
+            },
+          ]}
+        >
           {/* 핸들 */}
           <View style={styles.handle} />
 
@@ -171,7 +203,7 @@ export default function TimePickerBottomSheet({ visible, onClose, onConfirm }: P
           <TouchableOpacity style={styles.ctaButton} onPress={handleConfirm}>
             <Text style={styles.ctaButtonText}>완료</Text>
           </TouchableOpacity>
-        </View>
+        </Animated.View>
       </View>
     </Modal>
   );
