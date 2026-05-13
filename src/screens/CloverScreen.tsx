@@ -14,7 +14,7 @@ export default function CloverScreen({ navigation }: Props) {
       <NavigationBar
         type="default"
         title="행운 포인트"
-        onBack={() => navigation.navigate('Home')}
+        onBack={() => navigation.goBack()}
       />
 
       <View style={styles.body}>

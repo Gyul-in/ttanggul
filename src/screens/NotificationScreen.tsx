@@ -14,7 +14,7 @@ export default function NotificationScreen({ navigation }: Props) {
       <NavigationBar
         type="default"
         title="알림"
-        onBack={() => navigation.navigate('Home')}
+        onBack={() => navigation.goBack()}
       />
 
       <View style={styles.body}>
