@@ -4,7 +4,6 @@ import { StyleSheet, View, Pressable, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../theme';
 import { AppIcon } from '../components/AppIcon';
-import { AppText } from '../components/AppText';
 import HomeScreen from '../screens/HomeScreen';
 import SaveScreen from '../screens/SaveScreen';
 import SettingsScreen from '../screens/SettingsScreen';

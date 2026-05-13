@@ -19,18 +19,14 @@ const TAGS = [
 ];
 
 export default function OnboardingPreferenceScreen({ navigation }: any) {
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   const toggleTag = (id: string) => {
-    if (selectedTags.includes(id)) {
-      setSelectedTags(selectedTags.filter((t) => t !== id));
-    } else {
-      setSelectedTags([...selectedTags, id]);
-    }
+    setSelectedTag(id);
   };
 
   const handleNext = () => {
-    if (selectedTags.length > 0) {
+    if (selectedTag) {
       navigation.navigate('OnboardingNotification');
     }
   };
@@ -64,7 +60,7 @@ export default function OnboardingPreferenceScreen({ navigation }: any) {
           {/* Selectable Cards */}
           <View style={styles.cardList}>
             {TAGS.map((tag) => {
-              const isSelected = selectedTags.includes(tag.id);
+              const isSelected = selectedTag === tag.id;
               return (
                 <TouchableOpacity
                   key={tag.id}
@@ -89,9 +85,9 @@ export default function OnboardingPreferenceScreen({ navigation }: any) {
         {/* Bottom CTA Button */}
         <View style={styles.bottomContainer}>
           <TouchableOpacity
-            style={[styles.ctaButton, selectedTags.length === 0 && styles.ctaButtonDisabled]}
+            style={[styles.ctaButton, !selectedTag && styles.ctaButtonDisabled]}
             onPress={handleNext}
-            disabled={selectedTags.length === 0}
+            disabled={!selectedTag}
           >
             <Text style={styles.ctaButtonText}>다음</Text>
           </TouchableOpacity>
