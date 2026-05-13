@@ -12,7 +12,7 @@ export default function SplashScreen({ navigation }: any) {
       const unsubscribe = onAuthStateChanged(auth, (user) => {
         if (user) {
           // 이미 로그인된 상태라면 메인 화면(또는 온보딩)으로 이동
-          navigation.replace('OnboardingNickname'); 
+          navigation.replace('Main');
         } else {
           // 로그인되지 않았다면 로그인 화면으로 이동
           navigation.replace('Login');
