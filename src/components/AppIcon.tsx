@@ -7,6 +7,7 @@ export type IconName =
   | 'chevron-right'
   | 'clover'
   | 'edit'
+  | 'edit-filled'
   | 'edit-contained'
   | 'heart'
   | 'heart-filled'
@@ -69,6 +70,13 @@ export function AppIcon({ name, size = 24, color = '#111111' }: AppIconProps) {
       return (
         <Svg {...base}>
           <Path d="M13.4482 6.95241L17.0482 10.5524M4.44824 19.5524L8.81423 18.6727C9.046 18.626 9.25882 18.5119 9.42596 18.3446L19.1996 8.56559C19.6682 8.09674 19.6679 7.33675 19.1989 6.86829L17.1285 4.80021C16.6597 4.33194 15.9001 4.33226 15.4317 4.80092L5.657 14.581C5.49019 14.7479 5.37629 14.9603 5.32954 15.1916L4.44824 19.5524Z" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+        </Svg>
+      );
+
+    case 'edit-filled':
+      return (
+        <Svg {...base}>
+          <Path d="M20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83zM3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z" fill={color} />
         </Svg>
       );
 
