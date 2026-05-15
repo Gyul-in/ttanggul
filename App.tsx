@@ -5,6 +5,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import RootNavigator from './src/navigation/RootNavigator';
+import { SaveProvider } from './src/context/SaveContext';
+import { UIProvider } from './src/context/UIContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -27,10 +29,14 @@ export default function App() {
 
   return (
     <SafeAreaProvider onLayout={onLayoutRootView}>
-      <NavigationContainer>
-        <RootNavigator />
-        <StatusBar style="auto" />
-      </NavigationContainer>
+      <UIProvider>
+        <SaveProvider>
+          <NavigationContainer theme={{ dark: false, colors: { background: '#F5F1E8', primary: '#F5F1E8', card: '#F5F1E8', text: '#111111', border: 'transparent', notification: '#F5F1E8' }, fonts: { regular: { fontFamily: 'Pretendard-Regular', fontWeight: '400' }, medium: { fontFamily: 'Pretendard-Medium', fontWeight: '500' }, bold: { fontFamily: 'Pretendard-SemiBold', fontWeight: '600' }, heavy: { fontFamily: 'Pretendard-SemiBold', fontWeight: '700' } } }}>
+            <RootNavigator />
+            <StatusBar style="auto" />
+          </NavigationContainer>
+        </SaveProvider>
+      </UIProvider>
     </SafeAreaProvider>
   );
 }

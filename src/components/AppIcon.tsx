@@ -13,6 +13,8 @@ export type IconName =
   | 'home'
   | 'home-filled'
   | 'menu'
+  | 'menu-05'
+  | 'pencil-fill'
   | 'send'
   | 'settings'
   | 'settings-filled'
@@ -155,6 +157,20 @@ export function AppIcon({ name, size = 24, color = '#111111' }: AppIconProps) {
         <Svg {...base}>
           <Circle cx={12} cy={12} r={8} fill="#D2D4D2" />
           <Path d="M15 9L12 12M12 12L9 15M12 12L15 15M12 12L9 9" stroke="white" strokeWidth={1.94} strokeLinecap="round" />
+        </Svg>
+      );
+
+    case 'menu-05':
+      return (
+        <Svg {...base}>
+          <Path d="M10.5 18H20M4 12H20M4 6H20" stroke={color} strokeWidth={2} strokeLinecap="round" />
+        </Svg>
+      );
+
+    case 'pencil-fill':
+      return (
+        <Svg {...base}>
+          <Path fillRule="evenodd" clipRule="evenodd" d="M17.6858 12.084L10.429 19.3457C10.1436 19.6312 9.77976 19.8264 9.38408 19.9063L5.01787 20.7861C4.73884 20.8424 4.4496 20.755 4.24834 20.5537C4.04718 20.3523 3.96051 20.0632 4.01689 19.7842L4.89775 15.4238C4.9776 15.0289 5.17252 14.6659 5.45732 14.3809L12.7171 7.11524L17.6858 12.084ZM15.2317 4.6006C16.0319 3.80019 17.3304 3.79974 18.1312 4.59962L20.2015 6.667C21.0023 7.46716 21.0025 8.76548 20.2024 9.56642L18.5335 11.2363L13.5647 6.26759L15.2317 4.6006Z" fill={color} />
         </Svg>
       );
 

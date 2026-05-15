@@ -2,7 +2,7 @@ import { View, Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../theme';
 import { AppText } from './AppText';
-import { AppIcon } from './AppIcon';
+import { AppIcon, IconName } from './AppIcon';
 import { TangulLogo } from './TangulLogo';
 
 type NavigationBarProps = {
@@ -11,6 +11,9 @@ type NavigationBarProps = {
   onBack?: () => void;
   showMenu?: boolean;
   onMenu?: () => void;
+  rightIcon?: IconName;
+  rightIconColor?: string;
+  onRight?: () => void;
   pointCount?: number;
   onBell?: () => void;
   onClover?: () => void;
@@ -22,6 +25,9 @@ export function NavigationBar({
   onBack,
   showMenu,
   onMenu,
+  rightIcon,
+  rightIconColor,
+  onRight,
   pointCount = 0,
   onBell,
   onClover,
@@ -54,8 +60,11 @@ export function NavigationBar({
           <AppIcon name="chevron-left" size={24} color={colors.black} />
         </Pressable>
         <AppText variant="subTitle" color="black">{title}</AppText>
-        <Pressable onPress={onMenu} hitSlop={12} style={styles.iconSlot}>
-          {showMenu && <AppIcon name="menu" size={24} color={colors.black} />}
+        <Pressable onPress={rightIcon ? onRight : onMenu} hitSlop={12} style={styles.iconSlot}>
+          {rightIcon
+            ? <AppIcon name={rightIcon} size={24} color={rightIconColor ?? colors.black} />
+            : showMenu && <AppIcon name="menu" size={24} color={colors.black} />
+          }
         </Pressable>
       </View>
     </View>

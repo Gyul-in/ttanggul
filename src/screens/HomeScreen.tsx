@@ -5,15 +5,25 @@ import { colors } from '../theme';
 import { NavigationBar } from '../components/NavigationBar';
 import { AppIcon } from '../components/AppIcon';
 import { AppText } from '../components/AppText';
+import { useSave } from '../context/SaveContext';
 
 const DESIGN_WIDTH  = 402;
 const DESIGN_HEIGHT = 875;
+
+// 임시 카드 데이터 - 나중에 서버 데이터로 교체
+const CURRENT_CARD = {
+  id: 'card-001',
+  text: '실패 경험은 면접에서 오히려 강점입니다. 어떻게 극복했는지가 핵심입니다.',
+  category: '현실조언',
+};
 
 type Props = {
   navigation: NativeStackNavigationProp<any>;
 };
 
 export default function HomeScreen({ navigation }: Props) {
+  const { toggleSave, isSaved } = useSave();
+  const saved = isSaved(CURRENT_CARD.id);
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
   const uiScale = Math.min(screenWidth / DESIGN_WIDTH, 1);
@@ -101,8 +111,15 @@ export default function HomeScreen({ navigation }: Props) {
               <Pressable style={[styles.cardFlipBtn, { paddingHorizontal: cardFlipPadH, paddingVertical: cardFlipPadV, borderRadius: Math.round(12 * uiScale) }]}>
                 <AppText variant="bodyM_SB" color="white">카드 뒤집기</AppText>
               </Pressable>
-              <Pressable style={[styles.cardHeartBtn, { width: cardHeartW, paddingVertical: cardFlipPadV, borderRadius: Math.round(12 * uiScale) }]}>
-                <AppIcon name="heart" size={cardIconSz} color={colors.gray900} />
+              <Pressable
+                style={[styles.cardHeartBtn, { width: cardHeartW, paddingVertical: cardFlipPadV, borderRadius: Math.round(12 * uiScale) }]}
+                onPress={() => toggleSave(CURRENT_CARD)}
+              >
+                <AppIcon
+                  name={saved ? 'heart-filled' : 'heart'}
+                  size={cardIconSz}
+                  color={saved ? colors.error : colors.gray900}
+                />
               </Pressable>
             </View>
           </ImageBackground>

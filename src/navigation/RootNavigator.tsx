@@ -4,24 +4,21 @@ import LoginScreen from '../screens/LoginScreen';
 import OnboardingNicknameScreen from '../screens/OnboardingNicknameScreen';
 import OnboardingPreferenceScreen from '../screens/OnboardingPreferenceScreen';
 import OnboardingNotificationScreen from '../screens/OnboardingNotificationScreen';
-import NotificationScreen from '../screens/NotificationScreen';
-import CloverScreen from '../screens/CloverScreen';
+import AccountInfoScreen from '../screens/AccountInfoScreen';
 import TabNavigator from './TabNavigator';
 
 const Stack = createNativeStackNavigator();
 
 export default function RootNavigator() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false, animation: 'none' }} initialRouteName="Splash">
+    <Stack.Navigator screenOptions={{ headerShown: false, animation: 'none', contentStyle: { backgroundColor: '#F5F1E8' } }} initialRouteName="Splash">
       <Stack.Screen name="Splash" component={SplashScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="OnboardingNickname" component={OnboardingNicknameScreen} />
       <Stack.Screen name="OnboardingPreference" component={OnboardingPreferenceScreen} />
       <Stack.Screen name="OnboardingNotification" component={OnboardingNotificationScreen} />
       <Stack.Screen name="Main" component={TabNavigator} />
-      <Stack.Screen name="Notification" component={NotificationScreen} />
-      <Stack.Screen name="Clover" component={CloverScreen} />
-
+      <Stack.Screen name="AccountInfo" component={AccountInfoScreen} />
     </Stack.Navigator>
   );
 }
