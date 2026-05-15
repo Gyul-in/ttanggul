@@ -212,7 +212,7 @@ export default function SettingsScreen({ navigation }: Props) {
                 }
               />
               <SettingItem label="알림 시간" value={notificationTime || '11:00 PM'} onPress={() => setTimeSheetVisible(true)} />
-              <SettingItem label="글귀" value={preferredCategory?.replace('#', '') || '공감'} isLast onPress={() => setQuoteSheetVisible(true)} />
+              <SettingItem label="카테고리" value={preferredCategory?.replace('#', '') || '공감'} isLast onPress={() => setQuoteSheetVisible(true)} />
             </View>
           </View>
 
