@@ -5,7 +5,10 @@ import { colors } from '../theme';
 import { NavigationBar } from '../components/NavigationBar';
 import { AppIcon } from '../components/AppIcon';
 import { AppText } from '../components/AppText';
+import { useEffect, useState } from 'react';
 import { useSave } from '../context/SaveContext';
+import CloverModal from '../components/CloverModal';
+import { useUserStore } from '../store/useUserStore';
 
 const DESIGN_WIDTH  = 402;
 const DESIGN_HEIGHT = 875;
@@ -25,6 +28,25 @@ export default function HomeScreen({ navigation }: Props) {
   const { toggleSave, isSaved } = useSave();
   const saved = isSaved(CURRENT_CARD.id);
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+  const clovers = useUserStore((state) => state.clovers);
+  const addClover = useUserStore((state) => state.addClover);
+  const lastCloverReceivedDate = useUserStore((state) => state.lastCloverReceivedDate);
+  const setLastCloverReceivedDate = useUserStore((state) => state.setLastCloverReceivedDate);
+
+  const [showCloverModal, setShowCloverModal] = useState(false);
+
+  useEffect(() => {
+    const today = new Date().toDateString();
+    if (lastCloverReceivedDate !== today) {
+      setShowCloverModal(true);
+    }
+  }, [lastCloverReceivedDate]);
+
+  const handleReceiveClover = () => {
+    addClover();
+    setLastCloverReceivedDate(new Date().toDateString());
+    setShowCloverModal(false);
+  };
 
   const uiScale = Math.min(screenWidth / DESIGN_WIDTH, 1);
 
@@ -65,7 +87,7 @@ export default function HomeScreen({ navigation }: Props) {
     <View style={styles.container}>
       <NavigationBar
         type="logo"
-        pointCount={2}
+        pointCount={clovers}
         onBell={() => navigation.navigate('Notification')}
         onClover={() => navigation.navigate('Clover')}
       />
@@ -138,6 +160,11 @@ export default function HomeScreen({ navigation }: Props) {
           resizeMode="contain"
         />
       </View>
+
+      <CloverModal
+        visible={showCloverModal}
+        onReceive={handleReceiveClover}
+      />
     </View>
   );
 }

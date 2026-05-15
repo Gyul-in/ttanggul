@@ -1,4 +1,4 @@
-import Svg, { Path, Circle } from 'react-native-svg';
+import Svg, { Path, Circle, Rect } from 'react-native-svg';
 
 export type IconName =
   | 'bell'
@@ -7,6 +7,7 @@ export type IconName =
   | 'chevron-right'
   | 'clover'
   | 'edit'
+  | 'edit-filled'
   | 'edit-contained'
   | 'heart'
   | 'heart-filled'
@@ -20,15 +21,18 @@ export type IconName =
   | 'settings-filled'
   | 'share'
   | 'close'
-  | 'close-circle';
+  | 'close-circle'
+  | 'checkbox-m-on'
+  | 'checkbox-m-off';
 
 type AppIconProps = {
   name: IconName;
   size?: number;
   color?: string;
+  strokeWidth?: number;
 };
 
-export function AppIcon({ name, size = 24, color = '#111111' }: AppIconProps) {
+export function AppIcon({ name, size = 24, color = '#111111', strokeWidth = 2 }: AppIconProps) {
   const base = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none' } as const;
 
   switch (name) {
@@ -49,7 +53,23 @@ export function AppIcon({ name, size = 24, color = '#111111' }: AppIconProps) {
     case 'check':
       return (
         <Svg {...base}>
-          <Path d="M20.0005 6L9.00049 17L4.00049 12" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+          <Path d="M20.0005 6L9.00049 17L4.00049 12" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
+        </Svg>
+      );
+
+    case 'checkbox-m-on':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 20 20" fill="none">
+          <Rect width="20" height="20" rx="4" fill="#F5F1E8" />
+          <Path d="M14 6.5L8.5 13.5L6 10.5" stroke="#B48A5B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        </Svg>
+      );
+
+    case 'checkbox-m-off':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 20 20" fill="none">
+          <Rect width="20" height="20" rx="4" fill="#F5F1E8" />
+          <Path d="M14 6.5L8.5 13.5L6 10.5" stroke="#D3BF9E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
         </Svg>
       );
 
@@ -71,6 +91,13 @@ export function AppIcon({ name, size = 24, color = '#111111' }: AppIconProps) {
       return (
         <Svg {...base}>
           <Path d="M13.4482 6.95241L17.0482 10.5524M4.44824 19.5524L8.81423 18.6727C9.046 18.626 9.25882 18.5119 9.42596 18.3446L19.1996 8.56559C19.6682 8.09674 19.6679 7.33675 19.1989 6.86829L17.1285 4.80021C16.6597 4.33194 15.9001 4.33226 15.4317 4.80092L5.657 14.581C5.49019 14.7479 5.37629 14.9603 5.32954 15.1916L4.44824 19.5524Z" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+        </Svg>
+      );
+
+    case 'edit-filled':
+      return (
+        <Svg {...base}>
+          <Path d="M20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83zM3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z" fill={color} />
         </Svg>
       );
 

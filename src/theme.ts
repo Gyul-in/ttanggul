@@ -18,9 +18,11 @@ export const colors = {
   gray100: '#ECEDEC',
   gray200: '#D2D4D2',
   gray300: '#B8BBB8',
+  gray400: '#9FA19F',
   gray500: '#858885',
   gray600: '#6A6F6B',
   gray700: '#525552',
+  gray800: '#353835',
   gray900: '#212121',
 
   // Foundation

@@ -22,6 +22,7 @@ import { AppText } from '../components/AppText';
 import { AppIcon } from '../components/AppIcon';
 import TimePickerBottomSheet from '../components/TimePickerBottomSheet';
 import FeedbackBottomSheet from '../components/FeedbackBottomSheet';
+import { useUserStore } from '../store/useUserStore';
 
 type SettingItemProps = {
   label: string;
@@ -93,11 +94,18 @@ const CATEGORY_ROWS = [
 export default function SettingsScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const route = useRoute<RouteProp<{ Settings: { openQuoteSheet?: boolean; openTimeSheet?: boolean } }, 'Settings'>>();
+
+  const preferredCategory = useUserStore((state) => state.preferredCategory);
+  const setPreferredCategory = useUserStore((state) => state.setPreferredCategory);
+  const notificationTime = useUserStore((state) => state.notificationTime);
+  const setNotificationTime = useUserStore((state) => state.setNotificationTime);
+  const nickname = useUserStore((state) => state.nickname);
+  const clovers = useUserStore((state) => state.clovers);
+
   const [isNotificationOn, setIsNotificationOn] = useState(true);
   const [quoteSheetVisible, setQuoteSheetVisible] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('공감');
+  const [localCategory, setLocalCategory] = useState(preferredCategory || '공감');
   const [timeSheetVisible, setTimeSheetVisible] = useState(false);
-  const [selectedTime, setSelectedTime] = useState('11:00 PM');
   const [feedbackSheetVisible, setFeedbackSheetVisible] = useState(false);
   const toastOpacity = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
@@ -116,6 +124,7 @@ export default function SettingsScreen({ navigation }: Props) {
     useCallback(() => {
       const params = route.params as any;
       if (params?.openQuoteSheet) {
+        setLocalCategory(preferredCategory || '공감');
         setQuoteSheetVisible(true);
         navigation.setParams({ openQuoteSheet: undefined } as any);
       }
@@ -167,7 +176,7 @@ export default function SettingsScreen({ navigation }: Props) {
               <View style={styles.profileTextContainer}>
                 <View style={styles.nicknameRow}>
                   <AppText variant="sectionTitle" color="black">
-                    두듀
+                    {nickname || '두듀'}
                   </AppText>
                   <View style={styles.editIconWrapper}>
                     <View style={styles.editIconCircle}>
@@ -191,7 +200,7 @@ export default function SettingsScreen({ navigation }: Props) {
             <View style={styles.pointBadge}>
               <AppIcon name="clover" size={24} color={colors.primary} />
               <AppText variant="bodyL_SB" color="brown800">
-                2
+                {clovers}
               </AppText>
             </View>
           </View>
@@ -214,8 +223,8 @@ export default function SettingsScreen({ navigation }: Props) {
                   />
                 }
               />
-              <SettingItem label="알림 시간" value={selectedTime} onPress={() => setTimeSheetVisible(true)} />
-              <SettingItem label="글귀" value={selectedCategory} isLast onPress={() => setQuoteSheetVisible(true)} />
+              <SettingItem label="알림 시간" value={notificationTime || '11:00 PM'} onPress={() => setTimeSheetVisible(true)} />
+              <SettingItem label="카테고리" value={preferredCategory?.replace('#', '') || '공감'} isLast onPress={() => setQuoteSheetVisible(true)} />
             </View>
           </View>
 
@@ -249,13 +258,13 @@ export default function SettingsScreen({ navigation }: Props) {
                       {row.map((cat) => (
                         <TouchableOpacity
                           key={cat}
-                          style={[styles.categoryBtn, selectedCategory === cat && styles.categoryBtnSelected]}
+                          style={[styles.categoryBtn, localCategory === cat && styles.categoryBtnSelected]}
                           activeOpacity={0.7}
-                          onPress={() => setSelectedCategory(cat)}
+                          onPress={() => setLocalCategory(cat)}
                         >
                           <AppText
-                            variant={selectedCategory === cat ? 'bodyL_SB' : 'bodyL_M'}
-                            color={selectedCategory === cat ? 'brown700' : 'gray600'}
+                            variant={localCategory === cat ? 'bodyL_SB' : 'bodyL_M'}
+                            color={localCategory === cat ? 'brown700' : 'gray600'}
                           >
                             {cat}
                           </AppText>
@@ -271,7 +280,11 @@ export default function SettingsScreen({ navigation }: Props) {
               <TouchableOpacity
                 style={styles.sheetSaveBtn}
                 activeOpacity={0.7}
-                onPress={() => { setQuoteSheetVisible(false); showToast(); }}
+                onPress={() => {
+                  setPreferredCategory(localCategory);
+                  setQuoteSheetVisible(false);
+                  showToast();
+                }}
               >
                 <AppText variant="bodyXL_SB" style={styles.sheetSaveBtnText}>변경하기</AppText>
               </TouchableOpacity>
@@ -284,7 +297,7 @@ export default function SettingsScreen({ navigation }: Props) {
         visible={timeSheetVisible}
         onClose={() => setTimeSheetVisible(false)}
         onConfirm={(time) => {
-          setSelectedTime(time);
+          setNotificationTime(time);
           setTimeSheetVisible(false);
           showToast();
         }}
