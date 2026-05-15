@@ -11,21 +11,35 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../theme';
-import { AppIcon } from '../components/AppIcon';
+import TermsBottomSheet from '../components/TermsBottomSheet';
+import { AppText } from '../components/AppText';
+import { useUserStore } from '../store/useUserStore';
 
 export default function OnboardingNicknameScreen({ navigation }: any) {
-  const [nickname, setNickname] = useState('');
+  const [nickname, setNicknameState] = useState('');
+  const [showTerms, setShowTerms] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const insets = useSafeAreaInsets();
+  const setNickname = useUserStore((state) => state.setNickname);
+
+  const handleChangeText = (text: string) => {
+    if (text.length <= 6) {
+      setNicknameState(text);
+      setHasError(text.length === 6);
+    }
+  };
 
   const handleNext = () => {
     if (nickname.trim().length > 0) {
+      setNickname(nickname.trim());
       navigation.navigate('OnboardingPreference');
     }
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView edges={['top', 'left', 'right']} style={styles.safeArea}>
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -84,13 +98,17 @@ export default function OnboardingNicknameScreen({ navigation }: any) {
                   {/* 인풋 - padding: 15px 16px */}
                   <TextInput
                     style={styles.textInput}
-                    placeholder="닉네임을 입력해 주세요"
+                    placeholder="최대 6자까지 입력할 수 있어요"
                     placeholderTextColor={theme.colors.brown600}
                     value={nickname}
-                    onChangeText={setNickname}
-                    maxLength={10}
+                    onChangeText={handleChangeText}
                     textAlignVertical="center"
                   />
+                  {hasError && (
+                    <AppText variant="bodyM_R" style={styles.errorText}>
+                      최대 6자까지 입력할 수 있어요
+                    </AppText>
+                  )}
                 </View>
               </View>
             </View>
@@ -99,7 +117,7 @@ export default function OnboardingNicknameScreen({ navigation }: any) {
       </KeyboardAvoidingView>
 
       {/* 하단 다음 버튼 - KeyboardAvoidingView 밖으로 이동하여 고정 */}
-      <View style={styles.bottomContainer}>
+      <View style={[styles.bottomContainer, { paddingBottom: Math.max(16, insets.bottom) }]}>
         <TouchableOpacity
           style={[
             styles.ctaButton,
@@ -111,6 +129,15 @@ export default function OnboardingNicknameScreen({ navigation }: any) {
           <Text style={styles.ctaButtonText}>다음</Text>
         </TouchableOpacity>
       </View>
+
+      <TermsBottomSheet
+        visible={showTerms}
+        onClose={() => setShowTerms(false)}
+        onConfirm={() => {
+          // You can save the marketingAgreed preference here if needed
+          setShowTerms(false);
+        }}
+      />
     </SafeAreaView>
   );
 }
@@ -217,21 +244,23 @@ const styles = StyleSheet.create({
 
   /* 피그마 layout_OLRUPW: padding 15 16 / Brown/200 bg / borderRadius 8 */
   textInput: {
-    height: 54, // 고정 높이 - 입력 전후 크기 변동 방지
+    height: 54,
     backgroundColor: theme.colors.brown200,
     borderRadius: 8,
     paddingHorizontal: 16,
-    paddingVertical: 15,
     fontFamily: 'Pretendard-Regular',
     fontSize: 17,
-    lineHeight: 25,
+    includeFontPadding: false,
     color: theme.colors.black,
+  },
+
+  errorText: {
+    color: '#F53434',
   },
 
   /* 하단 버튼 */
   bottomContainer: {
     paddingHorizontal: 16,
-    paddingBottom: 16,
     paddingTop: 10,
   },
   ctaButton: {

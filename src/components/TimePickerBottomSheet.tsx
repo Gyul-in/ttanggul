@@ -17,8 +17,12 @@ import { theme } from '../theme';
 
 /** 아이템 1개 높이 */
 const ITEM_HEIGHT = 44;
+/** 아이템 사이 간격 */
+const ITEM_GAP = 8;
+/** 스냅 단위 = 아이템 높이 + 간격 */
+const ITEM_STEP = ITEM_HEIGHT + ITEM_GAP;
 /** 화면에 보이는 아이템 수 (홀수여야 중앙 강조 가능) */
-const VISIBLE_ITEMS = 5;
+const VISIBLE_ITEMS = 3;
 
 type WheelPickerProps = {
   items: string[];
@@ -31,16 +35,15 @@ function WheelPicker({ items, onSelect, initialIndex = 0 }: WheelPickerProps) {
   const [selectedIndex, setSelectedIndex] = useState(initialIndex);
 
   // 위아래에 빈 패딩 아이템 추가 (중앙 정렬용)
-  const paddedItems = ['', '', ...items, '', ''];
+  const paddedItems = ['', ...items, ''];
 
   const handleScrollEnd = (e: any) => {
     const y = e.nativeEvent.contentOffset.y;
-    const idx = Math.round(y / ITEM_HEIGHT);
+    const idx = Math.round(y / ITEM_STEP);
     const clamped = Math.max(0, Math.min(idx, items.length - 1));
     setSelectedIndex(clamped);
     onSelect(clamped);
-    // 정확한 위치로 스냅
-    scrollRef.current?.scrollTo({ y: clamped * ITEM_HEIGHT, animated: true });
+    scrollRef.current?.scrollTo({ y: clamped * ITEM_STEP, animated: true });
   };
 
   return (
@@ -52,16 +55,16 @@ function WheelPicker({ items, onSelect, initialIndex = 0 }: WheelPickerProps) {
         ref={scrollRef}
         style={pickerStyles.scroll}
         showsVerticalScrollIndicator={false}
-        snapToInterval={ITEM_HEIGHT}
+        snapToInterval={ITEM_STEP}
         decelerationRate="fast"
         onMomentumScrollEnd={handleScrollEnd}
         onScrollEndDrag={handleScrollEnd}
-        contentOffset={{ x: 0, y: initialIndex * ITEM_HEIGHT }}
+        contentOffset={{ x: 0, y: initialIndex * ITEM_STEP }}
         scrollEventThrottle={16}
       >
         {paddedItems.map((item, i) => {
-          const realIndex = i - 2;
-          const isSelected = realIndex === selectedIndex;
+          const realIndex = i - 1;
+      const isSelected = realIndex === selectedIndex;
           return (
             <View key={i} style={pickerStyles.item}>
               <Text
@@ -82,15 +85,15 @@ function WheelPicker({ items, onSelect, initialIndex = 0 }: WheelPickerProps) {
 
 const pickerStyles = StyleSheet.create({
   wrapper: {
-    flex: 1,
-    height: ITEM_HEIGHT * VISIBLE_ITEMS,
+    width: 95,
+    height: ITEM_STEP * VISIBLE_ITEMS - ITEM_GAP,
     overflow: 'hidden',
     position: 'relative',
   },
   // 선택된 줄 강조 배경 (정중앙에 위치)
   highlight: {
     position: 'absolute',
-    top: ITEM_HEIGHT * 2, // 0,1은 빈 패딩 → 2번째가 중앙
+    top: ITEM_STEP * 1,
     left: 0,
     right: 0,
     height: ITEM_HEIGHT,
@@ -104,6 +107,7 @@ const pickerStyles = StyleSheet.create({
   },
   item: {
     height: ITEM_HEIGHT,
+    marginBottom: ITEM_GAP,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -137,8 +141,8 @@ type Props = {
 export default function TimePickerBottomSheet({ visible, onClose, onConfirm }: Props) {
   const insets = useSafeAreaInsets();
   const [meridiem, setMeridiem] = useState(0); // 0=AM, 1=PM
-  const [hour, setHour] = useState(10);         // 기본 11시 (0-based → index 10)
-  const [minute, setMinute] = useState(0);      // 기본 00분
+  const [hour, setHour] = useState(5);          // 기본 06시 (0-based → index 5)
+  const [minute, setMinute] = useState(30);     // 기본 30분
 
   const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
@@ -171,38 +175,39 @@ export default function TimePickerBottomSheet({ visible, onClose, onConfirm }: P
       statusBarTranslucent
       onRequestClose={onClose}
     >
-      {/* 전체를 감싸는 컨테이너: 딤 + 바텀시트를 아래로 정렬 */}
       <View style={styles.overlay}>
-        {/* 딤 배경 - 누르면 닫힘 */}
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
 
-        {/* 바텀 시트 본체 */}
         <Animated.View
           style={[
             styles.sheet,
-            {
-              transform: [{ translateY: slideAnim }],
-              paddingBottom: insets.bottom + 16,
-            },
+            { transform: [{ translateY: slideAnim }] },
           ]}
         >
-          {/* 핸들 */}
-          <View style={styles.handle} />
+          {/* 피그마 Frame 2147227859: padding 14px 20px, gap 24px, alignItems center */}
+          <View style={styles.sheetContent}>
+            {/* 핸들 */}
+            <View style={styles.handle} />
 
-          {/* 타이틀 */}
-          <Text style={styles.title}>알림 시간을 선택해 주세요</Text>
+            {/* 피그마 Frame 2147227858: 타이틀+피커 포함, height 227, gap 20 */}
+            <View style={styles.innerFrame}>
+              <Text style={styles.title}>알림 시간을 선택해 주세요</Text>
 
-          {/* 휠 피커 3개 */}
-          <View style={styles.pickerRow}>
-            <WheelPicker items={MERIDIEM} onSelect={setMeridiem} initialIndex={meridiem} />
-            <WheelPicker items={HOURS} onSelect={setHour} initialIndex={hour} />
-            <WheelPicker items={MINUTES} onSelect={setMinute} initialIndex={minute} />
+              {/* 피커: row, gap 20, flex 1로 남은 높이 채움 */}
+              <View style={styles.pickerArea}>
+                <WheelPicker items={MERIDIEM} onSelect={setMeridiem} initialIndex={meridiem} />
+                <WheelPicker items={HOURS} onSelect={setHour} initialIndex={hour} />
+                <WheelPicker items={MINUTES} onSelect={setMinute} initialIndex={minute} />
+              </View>
+            </View>
           </View>
 
-          {/* 완료 버튼 */}
-          <TouchableOpacity style={styles.ctaButton} onPress={handleConfirm}>
-            <Text style={styles.ctaButtonText}>변경하기</Text>
-          </TouchableOpacity>
+          {/* 피그마 Bottom_Fill: padding 16px 전체, safe area 포함 */}
+          <View style={[styles.bottomFill, { paddingBottom: Math.max(16, insets.bottom) }]}>
+            <TouchableOpacity style={styles.ctaButton} onPress={handleConfirm}>
+              <Text style={styles.ctaButtonText}>완료</Text>
+            </TouchableOpacity>
+          </View>
         </Animated.View>
       </View>
     </Modal>
@@ -215,48 +220,61 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     backgroundColor: 'rgba(0,0,0,0.3)',
   },
+  // 피그마: borderRadius 20 20 0 0, Brown 100
   sheet: {
     backgroundColor: theme.colors.brown100,
-    // 피그마: borderRadius 20px 20px 0 0
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+  },
+  // 피그마 Frame 2147227859: padding 14px 20px, gap 24px, alignItems center
+  sheetContent: {
     paddingTop: 14,
     paddingHorizontal: 20,
-    paddingBottom: 16,
+    paddingBottom: 24,
     alignItems: 'center',
+    gap: 24,
   },
-  // 피그마: width 78, height 5, borderRadius 999, Brown/200
+  // 핸들: width 78, height 5, Brown/200
   handle: {
     width: 78,
     height: 5,
     borderRadius: 999,
     backgroundColor: theme.colors.brown200,
   },
-  // 피그마: Header/Sub Title — SemiBold 20px, lineHeight 150%
+  // 피그마 Frame_6ZYRN0: 타이틀+피커 포함, height 227, gap 20
+  innerFrame: {
+    alignSelf: 'stretch',
+    height: 227,
+    gap: 20,
+  },
+  // 타이틀: alignSelf flex-start
   title: {
     fontFamily: 'Pretendard-SemiBold',
     fontSize: 20,
     lineHeight: 30,
     color: theme.colors.black,
-    alignSelf: 'flex-start',
-    marginTop: 24, // handle과 title 사이 gap
   },
-  // 피그마: row, gap: 20px
-  pickerRow: {
+  // 피커: row, fill 높이, gap 20, justifyContent center
+  pickerArea: {
+    flex: 1,
     flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: 20,
-    alignSelf: 'stretch',
-    marginTop: 24, // title과 pickerRow 사이 gap
   },
-  // 피그마: CTA btn_L — height 56, Gray/900, borderRadius 12
+  // 피그마 Bottom_Fill: padding 16px
+  bottomFill: {
+    alignSelf: 'stretch',
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
+  // CTA btn_L: height 56, Gray/900, borderRadius 12
   ctaButton: {
     height: 56,
     backgroundColor: theme.colors.gray900,
     borderRadius: 12,
-    alignSelf: 'stretch',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 24, // pickerRow와 ctaButton 사이 gap
   },
   ctaButtonText: {
     ...theme.typography.bodyXL_SB,

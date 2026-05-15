@@ -6,10 +6,11 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../theme';
 import { AppIcon } from '../components/AppIcon';
 import TimePickerBottomSheet from '../components/TimePickerBottomSheet';
+import { useUserStore } from '../store/useUserStore';
 
 const OPTIONS = [
   {
@@ -30,6 +31,8 @@ export default function OnboardingNotificationScreen({ navigation }: any) {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const insets = useSafeAreaInsets();
+  const setNotificationTime = useUserStore((state) => state.setNotificationTime);
 
   const handleOptionSelect = (id: string) => {
     setSelectedOption(id);
@@ -39,11 +42,16 @@ export default function OnboardingNotificationScreen({ navigation }: any) {
   };
 
   const handleComplete = () => {
+    if (selectedOption === 'random') {
+      setNotificationTime('랜덤');
+    } else if (selectedOption === 'fixed' && selectedTime) {
+      setNotificationTime(selectedTime);
+    }
     navigation.navigate('Main');
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView edges={['top', 'left', 'right']} style={styles.safeArea}>
       <View style={styles.container}>
         {/* Top Navigation Bar */}
         <View style={styles.navBar}>
@@ -77,6 +85,7 @@ export default function OnboardingNotificationScreen({ navigation }: any) {
           <View style={styles.cardList}>
             {OPTIONS.map((option) => {
               const isSelected = selectedOption === option.id;
+              const showTimeBadge = option.id === 'fixed' && selectedTime;
               return (
                 <TouchableOpacity
                   key={option.id}
@@ -89,11 +98,14 @@ export default function OnboardingNotificationScreen({ navigation }: any) {
                       {option.label}
                     </Text>
                     <Text style={[styles.cardDesc, isSelected && styles.cardDescSelected]}>
-                      {option.id === 'fixed' && selectedTime
-                        ? selectedTime
-                        : option.desc}
+                      {option.desc}
                     </Text>
                   </View>
+                  {showTimeBadge && (
+                    <View style={styles.timeBadge}>
+                      <Text style={styles.timeBadgeText}>{selectedTime}</Text>
+                    </View>
+                  )}
                 </TouchableOpacity>
               );
             })}
@@ -101,7 +113,8 @@ export default function OnboardingNotificationScreen({ navigation }: any) {
         </View>
 
         {/* Bottom CTA Button */}
-        <View style={styles.bottomContainer}>
+        <View style={[styles.bottomContainer, { paddingBottom: Math.max(16, insets.bottom) }]}>
+          <Text style={styles.guideText}>* 나중에 설정에서 변경 가능해요</Text>
           <TouchableOpacity
             style={[styles.ctaButton, !selectedOption && styles.ctaButtonDisabled]}
             onPress={handleComplete}
@@ -180,20 +193,34 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
   },
   card: {
-    width: 362,
     height: 76,
     backgroundColor: '#FFFCF7',
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    justifyContent: 'center',
-    alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   cardSelected: {
     backgroundColor: theme.colors.brown500,
   },
   cardContent: {
+    flex: 1,
     gap: 2,
+  },
+  timeBadge: {
+    backgroundColor: theme.colors.brown200,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  timeBadgeText: {
+    fontFamily: 'Pretendard-SemiBold',
+    fontSize: 15,
+    lineHeight: 22,
+    color: theme.colors.brown500,
+    letterSpacing: -0.3,
   },
   cardLabel: {
     fontFamily: 'Pretendard-SemiBold',
@@ -202,11 +229,11 @@ const styles = StyleSheet.create({
     color: '#6A6F6B',
   },
   cardLabelSelected: {
+    fontFamily: 'Pretendard-Bold',
     color: theme.colors.white,
   },
   cardDesc: {
-    fontFamily: 'Pretendard-SemiBold',
-    fontWeight: '500',
+    fontFamily: 'Pretendard-Medium',
     fontSize: 14,
     lineHeight: 21,
     color: '#858885',
@@ -216,8 +243,15 @@ const styles = StyleSheet.create({
   },
   bottomContainer: {
     paddingHorizontal: 16,
-    paddingBottom: 16,
-    paddingTop: 10,
+    paddingTop: 16,
+    gap: 10,
+  },
+  guideText: {
+    fontFamily: 'Pretendard-Medium',
+    fontSize: 13,
+    lineHeight: 20,
+    color: '#9FA19F',
+    textAlign: 'center',
   },
   ctaButton: {
     height: 56,

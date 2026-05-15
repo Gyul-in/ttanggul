@@ -13,6 +13,7 @@ export default function App() {
     'Pretendard-Regular': require('./src/assets/fonts/Pretendard-Regular.otf'),
     'Pretendard-Medium': require('./src/assets/fonts/Pretendard-Medium.otf'),
     'Pretendard-SemiBold': require('./src/assets/fonts/Pretendard-SemiBold.otf'),
+    'Pretendard-Bold': require('./src/assets/fonts/Pretendard-Bold.otf'),
   });
 
   const onLayoutRootView = useCallback(async () => {

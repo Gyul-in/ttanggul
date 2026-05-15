@@ -1,4 +1,4 @@
-import Svg, { Path, Circle } from 'react-native-svg';
+import Svg, { Path, Circle, Rect } from 'react-native-svg';
 
 export type IconName =
   | 'bell'
@@ -19,15 +19,18 @@ export type IconName =
   | 'settings-filled'
   | 'share'
   | 'close'
-  | 'close-circle';
+  | 'close-circle'
+  | 'checkbox-m-on'
+  | 'checkbox-m-off';
 
 type AppIconProps = {
   name: IconName;
   size?: number;
   color?: string;
+  strokeWidth?: number;
 };
 
-export function AppIcon({ name, size = 24, color = '#111111' }: AppIconProps) {
+export function AppIcon({ name, size = 24, color = '#111111', strokeWidth = 2 }: AppIconProps) {
   const base = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none' } as const;
 
   switch (name) {
@@ -48,7 +51,23 @@ export function AppIcon({ name, size = 24, color = '#111111' }: AppIconProps) {
     case 'check':
       return (
         <Svg {...base}>
-          <Path d="M20.0005 6L9.00049 17L4.00049 12" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+          <Path d="M20.0005 6L9.00049 17L4.00049 12" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
+        </Svg>
+      );
+
+    case 'checkbox-m-on':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 20 20" fill="none">
+          <Rect width="20" height="20" rx="4" fill="#F5F1E8" />
+          <Path d="M14 6.5L8.5 13.5L6 10.5" stroke="#B48A5B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        </Svg>
+      );
+
+    case 'checkbox-m-off':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 20 20" fill="none">
+          <Rect width="20" height="20" rx="4" fill="#F5F1E8" />
+          <Path d="M14 6.5L8.5 13.5L6 10.5" stroke="#D3BF9E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
         </Svg>
       );
 

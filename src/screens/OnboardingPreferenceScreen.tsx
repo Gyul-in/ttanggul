@@ -7,9 +7,10 @@ import {
   ScrollView,
   Image,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../theme';
 import { AppIcon } from '../components/AppIcon';
+import { useUserStore } from '../store/useUserStore';
 
 const TAGS = [
   {
@@ -46,6 +47,8 @@ const TAGS = [
 
 export default function OnboardingPreferenceScreen({ navigation }: any) {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const insets = useSafeAreaInsets();
+  const setPreferredCategory = useUserStore((state) => state.setPreferredCategory);
 
   const toggleTag = (id: string) => {
     setSelectedTag(id);
@@ -53,12 +56,16 @@ export default function OnboardingPreferenceScreen({ navigation }: any) {
 
   const handleNext = () => {
     if (selectedTag) {
+      const tagLabel = TAGS.find(t => t.id === selectedTag)?.label;
+      if (tagLabel) {
+        setPreferredCategory(tagLabel);
+      }
       navigation.navigate('OnboardingNotification');
     }
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView edges={['top', 'left', 'right']} style={styles.safeArea}>
       <View style={styles.container}>
         {/* Top Navigation Bar */}
         <View style={styles.navBar}>
@@ -110,7 +117,7 @@ export default function OnboardingPreferenceScreen({ navigation }: any) {
         </ScrollView>
 
         {/* Bottom CTA Button */}
-        <View style={styles.bottomContainer}>
+        <View style={[styles.bottomContainer, { paddingBottom: Math.max(16, insets.bottom) }]}>
           <Text style={styles.guideText}>* 나중에 설정에서 변경 가능해요</Text>
           <TouchableOpacity
             style={[styles.ctaButton, !selectedTag && styles.ctaButtonDisabled]}
@@ -168,10 +175,8 @@ const styles = StyleSheet.create({
   },
   cardList: {
     gap: 12,
-    alignItems: 'center',
   },
   card: {
-    width: 362,
     height: 76,
     backgroundColor: '#FFFCF7',
     borderRadius: 8,
@@ -185,8 +190,8 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.brown500,
   },
   cardContent: {
-    gap: 2,
     flex: 1,
+    gap: 2,
   },
   cardLabel: {
     fontFamily: 'Pretendard-SemiBold',
@@ -195,6 +200,7 @@ const styles = StyleSheet.create({
     color: '#6A6F6B',
   },
   cardLabelSelected: {
+    fontFamily: 'Pretendard-Bold',
     color: theme.colors.white,
   },
   cardDesc: {
@@ -212,8 +218,8 @@ const styles = StyleSheet.create({
   },
   bottomContainer: {
     paddingHorizontal: 16,
-    paddingBottom: 16,
-    gap: 16,
+    paddingTop: 16,
+    gap: 10,
   },
   guideText: {
     fontFamily: 'Pretendard-Medium',

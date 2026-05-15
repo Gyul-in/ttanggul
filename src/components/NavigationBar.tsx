@@ -88,8 +88,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.bgInput,
     borderRadius: 12,
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
     paddingVertical: 10,
     gap: 10,
+    width: 69,
   },
 });
