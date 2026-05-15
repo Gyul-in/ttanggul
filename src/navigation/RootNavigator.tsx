@@ -4,11 +4,8 @@ import LoginScreen from '../screens/LoginScreen';
 import OnboardingNicknameScreen from '../screens/OnboardingNicknameScreen';
 import OnboardingPreferenceScreen from '../screens/OnboardingPreferenceScreen';
 import OnboardingNotificationScreen from '../screens/OnboardingNotificationScreen';
-<<<<<<< HEAD
-=======
 import NotificationScreen from '../screens/NotificationScreen';
 import CloverScreen from '../screens/CloverScreen';
->>>>>>> 021acc2cb1618ea296ad6af5c035bfe6138e6c7c
 import AccountInfoScreen from '../screens/AccountInfoScreen';
 import TabNavigator from './TabNavigator';
 
@@ -23,11 +20,8 @@ export default function RootNavigator() {
       <Stack.Screen name="OnboardingPreference" component={OnboardingPreferenceScreen} />
       <Stack.Screen name="OnboardingNotification" component={OnboardingNotificationScreen} />
       <Stack.Screen name="Main" component={TabNavigator} />
-<<<<<<< HEAD
-=======
       <Stack.Screen name="Notification" component={NotificationScreen} />
       <Stack.Screen name="Clover" component={CloverScreen} />
->>>>>>> 021acc2cb1618ea296ad6af5c035bfe6138e6c7c
       <Stack.Screen name="AccountInfo" component={AccountInfoScreen} />
     </Stack.Navigator>
   );
