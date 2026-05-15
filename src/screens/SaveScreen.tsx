@@ -1,28 +1,63 @@
-import { View, Text, FlatList, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
+import { View, StyleSheet, FlatList, Pressable, Image, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { colors, typography } from '../theme';
+import Svg, { Path } from 'react-native-svg';
+import { AppText } from '../components/AppText';
+import { colors } from '../theme';
 
-// 임시 고정 카테고리 - 추후 실제 데이터로 교체 예정
 const CATEGORIES = [
-  { id: '위로', name: '위로' },
-  { id: '공감', name: '공감' },
-  { id: '동기부여', name: '동기부여' },
-  { id: '현실조언', name: '현실조언' },
-  { id: '명언', name: '명언' },
+  { id: '공감', name: '공감', image: require('../assets/illustrations/save-dudue-gongam.png') },
+  { id: '위로', name: '위로', image: require('../assets/illustrations/save-dudue-wiro.png') },
+  { id: '명언', name: '명언', image: require('../assets/illustrations/save-dudue-myungon.png') },
+  { id: '동기부여', name: '동기부여', image: require('../assets/illustrations/save-dudue-donggi.png') },
+  { id: '현실조언', name: '현실조언', image: require('../assets/illustrations/save-dudue-hyunsil.png') },
 ];
 
-type Category = { id: string; name: string };
+type Category = (typeof CATEGORIES)[0];
 
-function CategoryCard({ item, cardWidth }: { item: Category; cardWidth: number }) {
+function FolderBackground({ size }: { size: number }) {
+  return (
+    <Svg
+      width={size}
+      height={size}
+      viewBox="0 0 174 174"
+      fill="none"
+      style={StyleSheet.absoluteFillObject}
+    >
+      <Path
+        d="M174 28V73H68V12H158C166.837 12 174 19.163 174 28Z"
+        fill="#EDE2CE"
+      />
+      <Path
+        d="M0 158V16C0 7.16344 7.16344 0 16 0H82.7793C89.9945 0 96.317 4.82913 98.2155 11.7901L104.99 36.6312C106.177 40.9818 110.128 44 114.638 44H158C166.837 44 174 51.1634 174 60V158C174 166.837 166.837 174 158 174H16C7.16344 174 0 166.837 0 158Z"
+        fill="#FFFCF7"
+      />
+    </Svg>
+  );
+}
+
+function CategoryCard({ item, cardSize, scale }: { item: Category; cardSize: number; scale: number }) {
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const pad = Math.round(16 * scale);
+  const illustSize = Math.round(90 * scale);
+
   return (
     <Pressable
-      style={[styles.card, { width: cardWidth, height: cardWidth }]}
+      style={{ width: cardSize, height: cardSize }}
       onPress={() => navigation.navigate('CategoryDetail', { categoryName: item.name })}
     >
-      <Text style={styles.cardName}>{item.name}</Text>
+      <FolderBackground size={cardSize} />
+      <View style={[styles.cardContent, { padding: pad }]}>
+        <AppText variant="subTitle" color="black">{item.name}</AppText>
+        <View style={styles.illustRow}>
+          <Image
+            source={item.image}
+            style={{ width: illustSize, height: illustSize }}
+            resizeMode="contain"
+          />
+        </View>
+      </View>
     </Pressable>
   );
 }
@@ -30,22 +65,30 @@ function CategoryCard({ item, cardWidth }: { item: Category; cardWidth: number }
 export default function SaveScreen() {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
-  const cardWidth = Math.floor((width - 20 * 2 - 20) / 2);
+  const scale = width / 402;
+  const gap = Math.round(20 * scale);
+  const padH = Math.round(20 * scale);
+  const cardSize = Math.floor((width - padH * 2 - gap) / 2);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>보관함</Text>
+        <AppText variant="subTitle" color="black">보관함</AppText>
       </View>
-
       <FlatList
         data={CATEGORIES}
         keyExtractor={(item) => item.id}
         numColumns={2}
-        columnWrapperStyle={styles.row}
-        ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
-        renderItem={({ item }) => <CategoryCard item={item} cardWidth={cardWidth} />}
-        contentContainerStyle={styles.listContent}
+        columnWrapperStyle={{ gap }}
+        ItemSeparatorComponent={() => <View style={{ height: gap }} />}
+        renderItem={({ item }) => (
+          <CategoryCard item={item} cardSize={cardSize} scale={scale} />
+        )}
+        contentContainerStyle={{
+          paddingHorizontal: padH,
+          paddingTop: Math.round(10 * scale),
+          paddingBottom: Math.round(20 * scale),
+        }}
         showsVerticalScrollIndicator={false}
       />
     </View>
@@ -63,28 +106,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 20,
   },
-  headerTitle: {
-    ...typography.subTitle,
-    color: colors.black,
-    textAlign: 'center',
+  cardContent: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
   },
-  listContent: {
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 20,
-  },
-  row: {
-    gap: 20,
-  },
-  card: {
-    backgroundColor: colors.white,
-    borderRadius: 17,
-    padding: 12,
-  },
-  cardName: {
-    fontFamily: 'Pretendard-SemiBold',
-    fontSize: 18,
-    lineHeight: 27,
-    color: colors.black,
+  illustRow: {
+    alignItems: 'flex-end',
   },
 });

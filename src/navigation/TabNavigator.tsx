@@ -2,10 +2,12 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { StyleSheet, View, Pressable, Dimensions, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StackActions } from '@react-navigation/native';
 import { colors } from '../theme';
 import { AppIcon } from '../components/AppIcon';
+import { AppText } from '../components/AppText';
 import { useUI } from '../context/UIContext';
-import HomeScreen from '../screens/HomeScreen';
+import HomeStackNavigator from './HomeStackNavigator';
 import SaveStackNavigator from './SaveStackNavigator';
 import SettingsScreen from '../screens/SettingsScreen';
 
@@ -54,8 +56,14 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
                 target: state.routes[index]?.key,
                 canPreventDefault: true,
               });
-              if (!isFocused && !event.defaultPrevented) {
-                navigation.navigate(tab.name);
+              if (!event.defaultPrevented) {
+                const nestedKey = state.routes[index]?.state?.key;
+                if (!isFocused) {
+                  navigation.navigate(tab.name);
+                }
+                if (nestedKey) {
+                  navigation.dispatch({ ...StackActions.popToTop(), target: nestedKey });
+                }
               }
             };
 
@@ -86,7 +94,7 @@ export default function TabNavigator() {
       screenOptions={{ headerShown: false }}
     >
       <Tab.Screen name="Save" component={SaveStackNavigator} />
-      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Home" component={HomeStackNavigator} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
   );

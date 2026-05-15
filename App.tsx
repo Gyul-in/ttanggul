@@ -31,7 +31,7 @@ export default function App() {
     <SafeAreaProvider onLayout={onLayoutRootView}>
       <UIProvider>
         <SaveProvider>
-          <NavigationContainer>
+          <NavigationContainer theme={{ dark: false, colors: { background: '#F5F1E8', primary: '#F5F1E8', card: '#F5F1E8', text: '#111111', border: 'transparent', notification: '#F5F1E8' }, fonts: { regular: { fontFamily: 'Pretendard-Regular', fontWeight: '400' }, medium: { fontFamily: 'Pretendard-Medium', fontWeight: '500' }, bold: { fontFamily: 'Pretendard-SemiBold', fontWeight: '600' }, heavy: { fontFamily: 'Pretendard-SemiBold', fontWeight: '700' } } }}>
             <RootNavigator />
             <StatusBar style="auto" />
           </NavigationContainer>

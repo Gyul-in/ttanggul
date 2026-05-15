@@ -30,6 +30,20 @@ export default function CategoryDetailScreen({ navigation, route }: Props) {
   const cards: SavedCard[] = savedCategories[categoryName] ?? [];
   const sorted = sortLatest ? [...cards].reverse() : [...cards];
   const cardWidth = Math.floor((width - 40 - 14) / 2);
+
+  const modalWidth = Math.round(width * 337 / 402);
+  const modalPadH = Math.round(width * 20 / 402);
+  const modalPadTop = Math.round(width * 20 / 402);
+  const modalPadBottom = Math.round(width * 20 / 402);
+  const modalGap = Math.round(width * 32 / 402);
+  const illustW = Math.round(modalWidth * 133 / 337);
+  const illustH = Math.round(illustW * 87 / 133);
+  const modalBtnH = Math.round(width * 56 / 402);
+  const modalBtnRadius = Math.round(width * 12 / 402);
+  const modalTitleSize = Math.round(width * 20 / 402);
+  const modalSubSize = Math.round(width * 15 / 402);
+  const modalBtnTextSize = Math.round(width * 18 / 402);
+
   const cardFontSize = Math.round(cardWidth / 174 * 18);
   const cardLineHeight = cardFontSize * 1.5;
   const maxTextLines = Math.floor((cardWidth - 24) / cardLineHeight);
@@ -76,23 +90,17 @@ export default function CategoryDetailScreen({ navigation, route }: Props) {
     setToastVisible(true);
     Animated.sequence([
       Animated.timing(toastOpacity, { toValue: 1, duration: 200, useNativeDriver: true }),
-      Animated.delay(1800),
+      Animated.delay(2800),
       Animated.timing(toastOpacity, { toValue: 0, duration: 300, useNativeDriver: true }),
     ]).start(() => setToastVisible(false));
   };
 
   const handleConfirmDelete = () => {
     setShowConfirm(false);
-    const remaining = cards.filter(c => !selectedIds.has(c.id));
     removeCards(categoryName, selectedIds);
     setSelectedIds(new Set());
     setIsEditMode(false);
-    if (remaining.length === 0) {
-      showToastMessage();
-      setTimeout(() => navigation.goBack(), 1200);
-    } else {
-      showToastMessage();
-    }
+    showToastMessage();
   };
 
   const ctaBottomPad = insets.bottom > 0 ? insets.bottom : 16;
@@ -110,7 +118,7 @@ export default function CategoryDetailScreen({ navigation, route }: Props) {
         </Pressable>
         <Text style={styles.headerTitle}>{isEditMode ? '수정' : categoryName}</Text>
         <View style={styles.iconSlot}>
-          {!isEditMode && (
+          {!isEditMode && cards.length > 0 && (
             <Pressable onPress={enterEditMode} hitSlop={12}>
               <AppIcon name="pencil-fill" size={24} color="#A8ACA8" />
             </Pressable>
@@ -183,7 +191,27 @@ export default function CategoryDetailScreen({ navigation, route }: Props) {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.emptyWrap}>
-            <Text style={styles.emptyText}>아직 저장된 카드가 없어요.</Text>
+            <View style={styles.emptyGroup}>
+              <View style={styles.emptyIllustWrapper}>
+                <Image
+                  source={require('../../assets/illustrations/Empty.png')}
+                  style={styles.emptyIllust}
+                  resizeMode="contain"
+                />
+              </View>
+              <View style={styles.emptyTextBlock}>
+                <Text style={styles.emptyTitle}>보관함이 텅 비었어요!</Text>
+                <Text style={styles.emptySubtitle}>
+                  {'앗! 아직 저장된 문구가 없네요. 해당 카테고리로\n두듀가 준비한 문구들을 받아볼까요?'}
+                </Text>
+              </View>
+            </View>
+            <Pressable
+              style={({ pressed }) => [styles.emptyCtaBtn, pressed && { opacity: 0.8 }]}
+              onPress={() => navigation.getParent()?.navigate('Settings', { openQuoteSheet: true })}
+            >
+              <Text style={styles.emptyCtaText}>카테고리 변경하기</Text>
+            </Pressable>
           </View>
         }
       />
@@ -211,26 +239,32 @@ export default function CategoryDetailScreen({ navigation, route }: Props) {
       {/* 삭제 확인 모달 */}
       <Modal visible={showConfirm} transparent animationType="fade" statusBarTranslucent>
         <View style={styles.modalOverlay}>
-          <View style={styles.modalCard}>
+          <View style={[styles.modalCard, {
+            width: modalWidth,
+            paddingTop: modalPadTop,
+            paddingBottom: modalPadBottom,
+            paddingHorizontal: modalPadH,
+            gap: modalGap,
+          }]}>
             <View style={styles.modalTop}>
               <Image
                 source={require('../../assets/illustrations/Warning.png')}
-                style={styles.modalIllust}
+                style={{ width: illustW, height: illustH }}
                 resizeMode="contain"
               />
               <View style={styles.modalTextGroup}>
-                <Text style={styles.modalTitle}>기록이 삭제돼요!</Text>
-                <Text style={styles.modalSubtitle}>
+                <Text style={[styles.modalTitle, { fontSize: modalTitleSize, lineHeight: modalTitleSize * 1.5 }]}>기록이 삭제돼요!</Text>
+                <Text style={[styles.modalSubtitle, { fontSize: modalSubSize, lineHeight: modalSubSize * 1.5 }]}>
                   {'선택된 문구가 영구적으로 지워져요.\n그래도 삭제할까요?'}
                 </Text>
               </View>
             </View>
             <View style={styles.modalBtns}>
-              <Pressable style={styles.cancelBtn} onPress={() => setShowConfirm(false)}>
-                <Text style={styles.cancelBtnText}>취소</Text>
+              <Pressable style={[styles.cancelBtn, { height: modalBtnH, borderRadius: modalBtnRadius }]} onPress={() => setShowConfirm(false)}>
+                <Text style={[styles.cancelBtnText, { fontSize: modalBtnTextSize }]}>취소</Text>
               </Pressable>
-              <Pressable style={styles.confirmBtn} onPress={handleConfirmDelete}>
-                <Text style={styles.confirmBtnText}>삭제하기</Text>
+              <Pressable style={[styles.confirmBtn, { height: modalBtnH, borderRadius: modalBtnRadius }]} onPress={handleConfirmDelete}>
+                <Text style={[styles.confirmBtnText, { fontSize: modalBtnTextSize }]}>삭제하기</Text>
               </Pressable>
             </View>
           </View>
@@ -326,11 +360,57 @@ const styles = StyleSheet.create({
   emptyWrap: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: 60,
+    paddingTop: 100,
+    paddingBottom: 40,
+    gap: 40,
   },
-  emptyText: {
-    ...typography.bodyM_R,
-    color: colors.gray500,
+  emptyGroup: {
+    alignItems: 'center',
+    gap: 20,
+  },
+  emptyIllustWrapper: {
+    width: 187,
+    height: 187,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  emptyIllust: {
+    width: 179,
+    height: 179,
+  },
+  emptyTextBlock: {
+    alignItems: 'center',
+    gap: 6,
+  },
+  emptyTitle: {
+    fontFamily: 'Pretendard-SemiBold',
+    fontSize: 20,
+    lineHeight: 30,
+    color: colors.black,
+    textAlign: 'center',
+  },
+  emptySubtitle: {
+    fontFamily: 'Pretendard-Regular',
+    fontSize: 16,
+    lineHeight: 24,
+    color: '#6A6F6B',
+    textAlign: 'center',
+  },
+  emptyCtaBtn: {
+    width: 260,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+    backgroundColor: colors.gray900,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyCtaText: {
+    fontFamily: 'Pretendard-SemiBold',
+    fontSize: 16,
+    lineHeight: 24,
+    color: colors.white,
   },
   ctaWrapper: {
     position: 'absolute',
@@ -380,23 +460,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   modalCard: {
-    width: 337,
     backgroundColor: '#F5F1E8',
     borderRadius: 16,
-    paddingTop: 24,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-    gap: 32,
     alignItems: 'center',
   },
   modalTop: {
     width: '100%',
     alignItems: 'center',
-    gap: 16,
-  },
-  modalIllust: {
-    width: 133,
-    height: 87,
+    gap: 0,
   },
   modalTextGroup: {
     width: '100%',
@@ -405,14 +476,10 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontFamily: 'Pretendard-SemiBold',
-    fontSize: 20,
-    lineHeight: 30,
     color: '#111111',
   },
   modalSubtitle: {
     fontFamily: 'Pretendard-Medium',
-    fontSize: 15,
-    lineHeight: 22.5,
     color: '#858885',
     textAlign: 'center',
   },
@@ -423,28 +490,22 @@ const styles = StyleSheet.create({
   },
   cancelBtn: {
     flex: 1,
-    height: 56,
-    borderRadius: 12,
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
   },
   cancelBtnText: {
     fontFamily: 'Pretendard-SemiBold',
-    fontSize: 18,
     color: '#525552',
   },
   confirmBtn: {
     flex: 1,
-    height: 56,
-    borderRadius: 12,
     backgroundColor: '#FF5959',
     alignItems: 'center',
     justifyContent: 'center',
   },
   confirmBtnText: {
     fontFamily: 'Pretendard-SemiBold',
-    fontSize: 18,
     color: '#FFFFFF',
   },
 });
