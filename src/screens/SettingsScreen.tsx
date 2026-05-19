@@ -241,15 +241,23 @@ export default function SettingsScreen({ navigation }: Props) {
                 }
               />
               <SettingItem label="알림 시간" value={notificationTime || '11:00 PM'} onPress={() => setTimeSheetVisible(true)} />
-              <SettingItem label="카테고리" value={preferredCategory?.replace('#', '') || '공감'} isLast onPress={() => setQuoteSheetVisible(true)} />
+              <SettingItem label="글귀" value={preferredCategory?.replace('#', '') || '공감'} isLast onPress={() => setQuoteSheetVisible(true)} />
+            </View>
+          </View>
+
+          <View style={styles.settingsGroup}>
+            <SubHeader title="법적정보" />
+            <View style={styles.listContainer}>
+              <SettingItem label="개인정보 처리방침" isFirst onPress={() => {}} />
+              <SettingItem label="이용 약관" onPress={() => {}} />
+              <SettingItem label="마케팅 정보 수신" isLast onPress={() => {}} />
             </View>
           </View>
 
           <View style={styles.settingsGroup}>
             <SubHeader title="기타" />
             <View style={styles.listContainer}>
-              <SettingItem label="개인정보처리방침" isFirst />
-              <SettingItem label="의견 보내기" onPress={() => setFeedbackSheetVisible(true)} />
+              <SettingItem label="의견 보내기" isFirst onPress={() => setFeedbackSheetVisible(true)} />
               <SettingItem label="버전정보" value="v1.0" valueColor="gray600" showArrow={false} isLast />
             </View>
           </View>
