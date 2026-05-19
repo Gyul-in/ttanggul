@@ -22,6 +22,7 @@ import { AppText } from '../components/AppText';
 import { AppIcon } from '../components/AppIcon';
 import TimePickerBottomSheet from '../components/TimePickerBottomSheet';
 import FeedbackBottomSheet from '../components/FeedbackBottomSheet';
+import NicknameEditBottomSheet from '../components/NicknameEditBottomSheet';
 import { useUserStore } from '../store/useUserStore';
 
 type SettingItemProps = {
@@ -107,6 +108,8 @@ export default function SettingsScreen({ navigation }: Props) {
   const [localCategory, setLocalCategory] = useState(preferredCategory || '공감');
   const [timeSheetVisible, setTimeSheetVisible] = useState(false);
   const [feedbackSheetVisible, setFeedbackSheetVisible] = useState(false);
+  const [nicknameSheetVisible, setNicknameSheetVisible] = useState(false);
+  const setNickname = useUserStore((state) => state.setNickname);
   const toastOpacity = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
   const [toastMessage, setToastMessage] = useState('변경했어요!');
@@ -178,11 +181,16 @@ export default function SettingsScreen({ navigation }: Props) {
                   <AppText variant="sectionTitle" color="black">
                     {nickname || '두듀'}
                   </AppText>
-                  <View style={styles.editIconWrapper}>
+                  <TouchableOpacity
+                    style={styles.editIconWrapper}
+                    onPress={() => setNicknameSheetVisible(true)}
+                    activeOpacity={0.7}
+                    hitSlop={8}
+                  >
                     <View style={styles.editIconCircle}>
                       <AppIcon name="edit-filled" size={12} color={colors.gray300} />
                     </View>
-                  </View>
+                  </TouchableOpacity>
                 </View>
                 <TouchableOpacity
                   style={styles.infoLinkRow}
@@ -306,6 +314,15 @@ export default function SettingsScreen({ navigation }: Props) {
         visible={feedbackSheetVisible}
         onClose={() => setFeedbackSheetVisible(false)}
         onSend={() => showToast('소중한 의견 감사합니다.')}
+      />
+      <NicknameEditBottomSheet
+        visible={nicknameSheetVisible}
+        currentNickname={nickname || ''}
+        onClose={() => setNicknameSheetVisible(false)}
+        onConfirm={(newNickname) => {
+          setNickname(newNickname);
+          showToast();
+        }}
       />
       <Animated.View style={[styles.toastContainer, { opacity: toastOpacity }]} pointerEvents="none">
         <View style={styles.toastPill}>
