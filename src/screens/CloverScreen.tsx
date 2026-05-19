@@ -1,14 +1,25 @@
+import { useCallback } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useFocusEffect } from '@react-navigation/native';
 import { colors } from '../theme';
 import { NavigationBar } from '../components/NavigationBar';
 import { AppText } from '../components/AppText';
+import { useUI } from '../context/UIContext';
 
 type Props = {
   navigation: NativeStackNavigationProp<any>;
 };
 
 export default function CloverScreen({ navigation }: Props) {
+  const { setTabBarVisible } = useUI();
+
+  useFocusEffect(
+    useCallback(() => {
+      setTabBarVisible(false);
+      return () => setTabBarVisible(true);
+    }, [setTabBarVisible])
+  );
   return (
     <View style={styles.container}>
       <NavigationBar
@@ -47,8 +58,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
-    paddingBottom: 120,
-    gap: 20,
+    paddingBottom: 194,
+    gap: 40,
   },
   illustration: {
     width: 187,
