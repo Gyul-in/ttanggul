@@ -227,7 +227,7 @@ export default function TimePickerBottomSheet({
                     activeOpacity={0.7}
                   >
                     <AppIcon name={isRandom ? 'checkbox-m-on' : 'checkbox-m-off'} size={20} />
-                    <Text style={styles.checkboxText}>랜덤 시간으로 하기</Text>
+                    <Text style={styles.checkboxText}>랜덤 시간으로 설정</Text>
                   </TouchableOpacity>
                 </>
               )}
