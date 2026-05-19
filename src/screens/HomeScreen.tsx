@@ -1,11 +1,11 @@
-import { View, Image, ImageBackground, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
+import { View, Image, ImageBackground, Pressable, StyleSheet, useWindowDimensions, Animated } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors } from '../theme';
 import { NavigationBar } from '../components/NavigationBar';
 import { AppIcon } from '../components/AppIcon';
 import { AppText } from '../components/AppText';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useSave } from '../context/SaveContext';
 import CloverModal from '../components/CloverModal';
 import { useUserStore } from '../store/useUserStore';
@@ -13,7 +13,6 @@ import { useUserStore } from '../store/useUserStore';
 const DESIGN_WIDTH  = 402;
 const DESIGN_HEIGHT = 875;
 
-// 임시 카드 데이터 - 나중에 서버 데이터로 교체
 const CURRENT_CARD = {
   id: 'card-001',
   text: '실패 경험은 면접에서 오히려 강점입니다. 어떻게 극복했는지가 핵심입니다.',
@@ -36,6 +35,8 @@ export default function HomeScreen({ navigation }: Props) {
   const setUnreadNotification = useUserStore((state) => state.setUnreadNotification);
 
   const [showCloverModal, setShowCloverModal] = useState(false);
+  const [showBanner, setShowBanner] = useState(true);
+  const toastOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const today = new Date().toDateString();
@@ -48,6 +49,19 @@ export default function HomeScreen({ navigation }: Props) {
     addClover();
     setLastCloverReceivedDate(new Date().toDateString());
     setShowCloverModal(false);
+  };
+
+  const showToast = () => {
+    Animated.sequence([
+      Animated.timing(toastOpacity, { toValue: 1, duration: 200, useNativeDriver: true }),
+      Animated.delay(1800),
+      Animated.timing(toastOpacity, { toValue: 0, duration: 300, useNativeDriver: true }),
+    ]).start();
+  };
+
+  const handleToggleSave = () => {
+    toggleSave(CURRENT_CARD);
+    if (!saved) showToast();
   };
 
   const uiScale = Math.min(screenWidth / DESIGN_WIDTH, 1);
@@ -67,15 +81,18 @@ export default function HomeScreen({ navigation }: Props) {
   const cardIconSz    = Math.round(20 * uiScale);
   const cardFontSz    = Math.round(24 * uiScale);
   const cardLineH     = Math.round(36 * uiScale);
-  const cardBottomGap = Math.round(8  * uiScale);
   const cardFlipPadH  = Math.round(18 * uiScale);
   const cardFlipPadV  = Math.round(14 * uiScale);
   const cardHeartW    = Math.round(52 * uiScale);
 
   const bodyPadH      = Math.round(20 * uiScale);
-  const bodyPadTop    = Math.round(20 * uiScale);
-  const bodyGap       = Math.round(44 * uiScale);
+  const bodyPadTop    = Math.round(10 * uiScale);
+  const bodyGap       = Math.round(20 * uiScale);
   const contents01Gap = Math.round(30 * uiScale);
+
+  const bannerPadH    = Math.round(16 * uiScale);
+  const bannerPadV    = Math.round(14 * uiScale);
+  const bannerRadius  = Math.round(12 * uiScale);
 
   const dotR       = Math.round(3  * uiScale);
   const dotH       = dotR * 2;
@@ -103,6 +120,23 @@ export default function HomeScreen({ navigation }: Props) {
         paddingTop: bodyPadTop,
         gap: bodyGap,
       }]}>
+
+        {/* 배너 */}
+        {showBanner && (
+          <Pressable
+            style={[styles.banner, {
+              paddingHorizontal: bannerPadH,
+              paddingVertical: bannerPadV,
+              borderRadius: bannerRadius,
+            }]}
+            onPress={() => navigation.navigate('CardPick')}
+          >
+            <AppText variant="bodyM_M" style={styles.bannerText}>카드를 더 뽑아보세요</AppText>
+            <Pressable onPress={(e) => { e.stopPropagation(); setShowBanner(false); }} hitSlop={8}>
+              <AppIcon name="close" size={Math.round(24 * uiScale)} color={colors.gray300} />
+            </Pressable>
+          </Pressable>
+        )}
 
         <View style={[styles.contents01, { gap: contents01Gap }]}>
           <ImageBackground
@@ -135,18 +169,23 @@ export default function HomeScreen({ navigation }: Props) {
               </AppText>
             </View>
 
-            <View style={[styles.cardBottomRow, { gap: cardBottomGap }]}>
+            <View style={[styles.cardBottomRow, { gap: Math.round(8 * uiScale) }]}>
               <Pressable style={[styles.cardFlipBtn, { paddingHorizontal: cardFlipPadH, paddingVertical: cardFlipPadV, borderRadius: Math.round(12 * uiScale) }]}>
                 <AppText variant="bodyM_SB" color="white">카드 뒤집기</AppText>
               </Pressable>
               <Pressable
-                style={[styles.cardHeartBtn, { width: cardHeartW, paddingVertical: cardFlipPadV, borderRadius: Math.round(12 * uiScale) }]}
-                onPress={() => toggleSave(CURRENT_CARD)}
+                style={[styles.cardHeartBtn, {
+                  width: cardHeartW,
+                  height: cardHeartW,
+                  borderRadius: Math.round(12 * uiScale),
+                  backgroundColor: saved ? colors.error : colors.bgMain,
+                }]}
+                onPress={handleToggleSave}
               >
                 <AppIcon
                   name={saved ? 'heart-filled' : 'heart'}
                   size={cardIconSz}
-                  color={saved ? colors.error : colors.gray900}
+                  color={saved ? colors.white : colors.gray900}
                 />
               </Pressable>
             </View>
@@ -160,11 +199,20 @@ export default function HomeScreen({ navigation }: Props) {
           </Svg>
         </View>
 
-        <Image
-          source={require('../assets/illustrations/Half_dudue.png')}
-          style={{ width: dudueW, height: dudueH }}
-          resizeMode="contain"
-        />
+        {/* 두듀 + 토스트 */}
+        <View style={styles.dudueSection}>
+          <Image
+            source={require('../assets/illustrations/Half_dudue.png')}
+            style={{ width: dudueW, height: dudueH }}
+            resizeMode="contain"
+          />
+          <Animated.View style={[styles.toast, { opacity: toastOpacity }]}>
+            <AppIcon name="check" size={20} color={colors.white} />
+            <AppText variant="bodyM_SB" style={styles.toastText}>
+              '{CURRENT_CARD.category}' 보관함에 저장했어요
+            </AppText>
+          </Animated.View>
+        </View>
       </View>
 
       <CloverModal
@@ -183,6 +231,17 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     alignItems: 'center',
+  },
+  banner: {
+    alignSelf: 'stretch',
+    backgroundColor: colors.bgCard,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  bannerText: {
+    flex: 1,
+    color: '#393B38',
   },
   contents01: {
     alignItems: 'center',
@@ -215,8 +274,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   cardHeartBtn: {
-    backgroundColor: colors.bgMain,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  dudueSection: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+  },
+  toast: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 100,
+  },
+  toastText: {
+    color: colors.white,
   },
 });

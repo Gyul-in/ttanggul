@@ -13,6 +13,8 @@ export type IconName =
   | 'heart-filled'
   | 'home'
   | 'home-filled'
+  | 'info-circle'
+  | 'info-circle-contained'
   | 'menu'
   | 'menu-05'
   | 'pencil-fill'
@@ -197,6 +199,23 @@ export function AppIcon({ name, size = 24, color = '#111111', strokeWidth = 2 }:
       return (
         <Svg {...base}>
           <Path fillRule="evenodd" clipRule="evenodd" d="M17.6858 12.084L10.429 19.3457C10.1436 19.6312 9.77976 19.8264 9.38408 19.9063L5.01787 20.7861C4.73884 20.8424 4.4496 20.755 4.24834 20.5537C4.04718 20.3523 3.96051 20.0632 4.01689 19.7842L4.89775 15.4238C4.9776 15.0289 5.17252 14.6659 5.45732 14.3809L12.7171 7.11524L17.6858 12.084ZM15.2317 4.6006C16.0319 3.80019 17.3304 3.79974 18.1312 4.59962L20.2015 6.667C21.0023 7.46716 21.0025 8.76548 20.2024 9.56642L18.5335 11.2363L13.5647 6.26759L15.2317 4.6006Z" fill={color} />
+        </Svg>
+      );
+
+    case 'info-circle':
+      return (
+        <Svg {...base}>
+          <Circle cx={12} cy={12} r={9} stroke={color} strokeWidth={strokeWidth} />
+          <Circle cx={12} cy={8.5} r={1} fill={color} />
+          <Path d="M12 11.5V16" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" />
+        </Svg>
+      );
+
+    case 'info-circle-contained':
+      return (
+        <Svg {...base}>
+          <Path d="M3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12Z" fill={color} stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+          <Path d="M12 11.375L12 15.875M12 8.03955V8" stroke="#F5F1E8" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
         </Svg>
       );
 

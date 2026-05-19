@@ -106,15 +106,16 @@ const styles = StyleSheet.create({
     width: 69,
   },
   bellWrapper: {
-    position: 'relative',
+    width: 24,
+    height: 24,
   },
   notificationDot: {
     position: 'absolute',
     top: 0,
     right: 0,
-    width: 5,
-    height: 5,
-    borderRadius: 2.5,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
     backgroundColor: '#FF5959',
   },
 });

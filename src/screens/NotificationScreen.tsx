@@ -7,43 +7,16 @@ import { NavigationBar } from '../components/NavigationBar';
 import { AppIcon } from '../components/AppIcon';
 import { AppText } from '../components/AppText';
 import { useUI } from '../context/UIContext';
+import { useUserStore } from '../store/useUserStore';
 
 type Props = {
   navigation: NativeStackNavigationProp<any>;
 };
 
-type Notification = {
-  id: string;
-  text: string;
-  category: string;
-  receivedAt: Date;
-};
-
 const CATEGORIES = ['전체', '위로', '공감', '명언', '동기부여', '현실조언'];
 
-// 임시 더미 데이터
-const MOCK_NOTIFICATIONS: Notification[] = [
-  {
-    id: '1',
-    text: '실패 경험은 면접에서 오히려 강점입니다. 어떻게 극복했는지가 핵심입니다.',
-    category: '현실조언',
-    receivedAt: new Date(Date.now() - 1 * 60 * 60 * 1000),
-  },
-  {
-    id: '2',
-    text: '실패 경험은 면접에서 오히려 강점입니다. 어떻게 극복했는지가 핵심입니다.',
-    category: '위로',
-    receivedAt: new Date(Date.now() - 5 * 60 * 60 * 1000),
-  },
-  {
-    id: '3',
-    text: '실패 경험은 면접에서 오히려 강점입니다. 어떻게 극복했는지가 핵심입니다.',
-    category: '명언',
-    receivedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-  },
-];
-
-function formatTime(date: Date): string {
+function formatTime(dateStr: string): string {
+  const date = new Date(dateStr);
   const diffMs = Date.now() - date.getTime();
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   if (diffHours < 24) {
@@ -56,7 +29,8 @@ function formatTime(date: Date): string {
 
 export default function NotificationScreen({ navigation }: Props) {
   const { width } = useWindowDimensions();
-  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
+  const notifications = useUserStore((state) => state.notifications);
+  const deleteNotification = useUserStore((state) => state.deleteNotification);
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const [sortLatest, setSortLatest] = useState(true);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -84,9 +58,6 @@ export default function NotificationScreen({ navigation }: Props) {
   const chipRadius = Math.round(8 * scale);
   const chipGap = Math.round(10 * scale);
 
-  const deleteNotification = (id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
-  };
 
   const base = selectedCategory === '전체'
     ? notifications

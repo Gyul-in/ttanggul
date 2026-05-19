@@ -350,7 +350,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgMain,
   },
   navBar: {
-    height: 54,
+    height: 56,
     justifyContent: 'center',
     alignItems: 'center',
   },
