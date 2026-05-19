@@ -60,16 +60,15 @@ export function AppIcon({ name, size = 24, color = '#111111', strokeWidth = 2 }:
     case 'checkbox-m-on':
       return (
         <Svg width={size} height={size} viewBox="0 0 20 20" fill="none">
-          <Rect width="20" height="20" rx="4" fill="#F5F1E8" />
-          <Path d="M14 6.5L8.5 13.5L6 10.5" stroke="#B48A5B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          <Rect width="20" height="20" rx="6" fill="#8B6143" />
+          <Path d="M14 6.5L8.5 13.5L6 10.5" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
         </Svg>
       );
 
     case 'checkbox-m-off':
       return (
         <Svg width={size} height={size} viewBox="0 0 20 20" fill="none">
-          <Rect width="20" height="20" rx="4" fill="#F5F1E8" />
-          <Path d="M14 6.5L8.5 13.5L6 10.5" stroke="#D3BF9E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          <Rect width="20" height="20" rx="6" fill="#EDE2CE" />
         </Svg>
       );
 

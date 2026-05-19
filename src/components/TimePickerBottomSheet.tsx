@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 import { theme } from '../theme';
+import { AppIcon } from './AppIcon';
 
 /** 아이템 1개 높이 */
 const ITEM_HEIGHT = 44;
@@ -143,6 +144,7 @@ export default function TimePickerBottomSheet({ visible, onClose, onConfirm }: P
   const [meridiem, setMeridiem] = useState(0); // 0=AM, 1=PM
   const [hour, setHour] = useState(5);          // 기본 06시 (0-based → index 5)
   const [minute, setMinute] = useState(30);     // 기본 30분
+  const [isRandom, setIsRandom] = useState(false);
 
   const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
@@ -163,9 +165,13 @@ export default function TimePickerBottomSheet({ visible, onClose, onConfirm }: P
   }, [visible, slideAnim]);
 
   const handleConfirm = useCallback(() => {
-    const timeStr = `${MERIDIEM[meridiem]} ${HOURS[hour]}:${MINUTES[minute]}`;
-    onConfirm(timeStr);
-  }, [meridiem, hour, minute, onConfirm]);
+    if (isRandom) {
+      onConfirm('랜덤');
+    } else {
+      const timeStr = `${MERIDIEM[meridiem]} ${HOURS[hour]}:${MINUTES[minute]}`;
+      onConfirm(timeStr);
+    }
+  }, [isRandom, meridiem, hour, minute, onConfirm]);
 
   return (
     <Modal
@@ -189,16 +195,32 @@ export default function TimePickerBottomSheet({ visible, onClose, onConfirm }: P
             {/* 핸들 */}
             <View style={styles.handle} />
 
-            {/* 피그마 Frame 2147227858: 타이틀+피커 포함, height 227, gap 20 */}
+            {/* 피그마 Frame 2147227858: 타이틀+피커 포함, gap 24 */}
             <View style={styles.innerFrame}>
-              <Text style={styles.title}>알림 시간을 선택해 주세요</Text>
+              <View style={styles.titleAndPicker}>
+                <Text style={styles.title}>시간을 선택해 주세요</Text>
 
-              {/* 피커: row, gap 20, flex 1로 남은 높이 채움 */}
-              <View style={styles.pickerArea}>
-                <WheelPicker items={MERIDIEM} onSelect={setMeridiem} initialIndex={meridiem} />
-                <WheelPicker items={HOURS} onSelect={setHour} initialIndex={hour} />
-                <WheelPicker items={MINUTES} onSelect={setMinute} initialIndex={minute} />
+                {/* 피커: row, gap 20 */}
+                <View 
+                  style={[styles.pickerArea, isRandom && { opacity: 0.5 }]}
+                  pointerEvents={isRandom ? 'none' : 'auto'}
+                >
+                  <WheelPicker items={MERIDIEM} onSelect={setMeridiem} initialIndex={meridiem} />
+                  <WheelPicker items={HOURS} onSelect={setHour} initialIndex={hour} />
+                  <WheelPicker items={MINUTES} onSelect={setMinute} initialIndex={minute} />
+                </View>
               </View>
+
+              <View style={styles.divider} />
+
+              <TouchableOpacity 
+                style={styles.checkboxRow} 
+                onPress={() => setIsRandom(!isRandom)} 
+                activeOpacity={0.7}
+              >
+                <AppIcon name={isRandom ? 'checkbox-m-on' : 'checkbox-m-off'} size={20} />
+                <Text style={styles.checkboxText}>랜덤 시간으로 하기</Text>
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -230,7 +252,7 @@ const styles = StyleSheet.create({
   sheetContent: {
     paddingTop: 14,
     paddingHorizontal: 20,
-    paddingBottom: 24,
+    paddingBottom: 10,
     alignItems: 'center',
     gap: 24,
   },
@@ -241,10 +263,13 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     backgroundColor: theme.colors.brown200,
   },
-  // 피그마 Frame_6ZYRN0: 타이틀+피커 포함, height 227, gap 20
+  // 피그마 Frame_6ZYRN0: 타이틀+피커 포함, gap 24
   innerFrame: {
     alignSelf: 'stretch',
-    height: 227,
+    gap: 24,
+  },
+  titleAndPicker: {
+    alignSelf: 'stretch',
     gap: 20,
   },
   // 타이틀: alignSelf flex-start
@@ -256,7 +281,6 @@ const styles = StyleSheet.create({
   },
   // 피커: row, fill 높이, gap 20, justifyContent center
   pickerArea: {
-    flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -279,5 +303,19 @@ const styles = StyleSheet.create({
   ctaButtonText: {
     ...theme.typography.bodyXL_SB,
     color: theme.colors.white,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: theme.colors.brown200,
+  },
+  checkboxRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+  },
+  checkboxText: {
+    fontFamily: 'Pretendard-Medium',
+    fontSize: 18,
+    color: theme.colors.brown900,
   },
 });

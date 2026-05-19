@@ -13,6 +13,7 @@ export const colors = {
   brown600: '#A7784F',
   brown700: '#8B6143',
   brown800: '#71503B',
+  brown900: '#5C4232',
 
   // Gray scale
   gray100: '#ECEDEC',
