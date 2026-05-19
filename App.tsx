@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from 'react';
-import { LogBox } from 'react-native';
+import { LogBox, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
@@ -31,15 +31,17 @@ export default function App() {
   }
 
   return (
-    <SafeAreaProvider onLayout={onLayoutRootView}>
-      <UIProvider>
-        <SaveProvider>
-          <NavigationContainer theme={{ dark: false, colors: { background: '#F5F1E8', primary: '#F5F1E8', card: '#F5F1E8', text: '#111111', border: 'transparent', notification: '#F5F1E8' }, fonts: { regular: { fontFamily: 'Pretendard-Regular', fontWeight: '400' }, medium: { fontFamily: 'Pretendard-Medium', fontWeight: '500' }, bold: { fontFamily: 'Pretendard-SemiBold', fontWeight: '600' }, heavy: { fontFamily: 'Pretendard-SemiBold', fontWeight: '700' } } }}>
-            <RootNavigator />
-            <StatusBar style="auto" />
-          </NavigationContainer>
-        </SaveProvider>
-      </UIProvider>
-    </SafeAreaProvider>
+    <View style={{ flex: 1, backgroundColor: '#F5F1E8' }}>
+      <SafeAreaProvider onLayout={onLayoutRootView}>
+        <UIProvider>
+          <SaveProvider>
+            <NavigationContainer theme={{ dark: false, colors: { background: '#F5F1E8', primary: '#F5F1E8', card: '#F5F1E8', text: '#111111', border: 'transparent', notification: '#F5F1E8' }, fonts: { regular: { fontFamily: 'Pretendard-Regular', fontWeight: '400' }, medium: { fontFamily: 'Pretendard-Medium', fontWeight: '500' }, bold: { fontFamily: 'Pretendard-SemiBold', fontWeight: '600' }, heavy: { fontFamily: 'Pretendard-SemiBold', fontWeight: '700' } } }}>
+              <RootNavigator />
+              <StatusBar style="auto" />
+            </NavigationContainer>
+          </SaveProvider>
+        </UIProvider>
+      </SafeAreaProvider>
+    </View>
   );
 }

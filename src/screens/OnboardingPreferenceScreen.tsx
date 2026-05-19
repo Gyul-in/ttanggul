@@ -78,6 +78,8 @@ export default function OnboardingPreferenceScreen({ navigation }: any) {
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          bounces={false}
+          overScrollMode="never"
         >
           {/* Header Section */}
           <View style={styles.headerSection}>

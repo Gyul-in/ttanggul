@@ -13,6 +13,7 @@ import {
   Dimensions,
   useWindowDimensions,
 } from 'react-native';
+import { ScrollbarView } from '../components/ScrollbarView';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 import Svg, { Ellipse } from 'react-native-svg';
@@ -167,10 +168,9 @@ export default function SettingsScreen({ navigation }: Props) {
         </AppText>
       </View>
 
-      <ScrollView
+      <ScrollbarView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
       >
         <View style={styles.mainContainer}>
           <View style={styles.profileCard}>
@@ -262,7 +262,7 @@ export default function SettingsScreen({ navigation }: Props) {
             </View>
           </View>
         </View>
-      </ScrollView>
+      </ScrollbarView>
 
       <Modal
         visible={quoteSheetVisible}

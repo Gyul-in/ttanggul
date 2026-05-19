@@ -113,6 +113,8 @@ export default function NotificationScreen({ navigation }: Props) {
               ref={chipScrollRef}
               horizontal
               showsHorizontalScrollIndicator={false}
+              bounces={false}
+              overScrollMode="never"
               style={{ flexShrink: 0 }}
               contentContainerStyle={{ flexDirection: 'row', alignItems: 'center', gap: chipGap }}
             >

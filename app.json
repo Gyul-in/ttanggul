@@ -14,13 +14,15 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.ddanggulapp"
+      "bundleIdentifier": "com.anonymous.ddanggulapp",
+      "backgroundColor": "#F5F1E8"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "backgroundColor": "#F5F1E8",
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.anonymous.ddanggulapp"

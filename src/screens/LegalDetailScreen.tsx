@@ -4,6 +4,7 @@ import { colors, typography } from '../theme';
 import { NavigationBar } from '../components/NavigationBar';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
+import { ScrollbarView } from '../components/ScrollbarView';
 
 type Props = {
   navigation: NativeStackNavigationProp<any>;
@@ -213,15 +214,14 @@ export default function LegalDetailScreen({ route, navigation }: Props) {
   return (
     <View style={styles.container}>
       <NavigationBar title={title} onBack={() => navigation.goBack()} />
-      <ScrollView
+      <ScrollbarView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
       >
         <View style={styles.card}>
           <Text style={styles.bodyText}>{renderContent(content)}</Text>
         </View>
-      </ScrollView>
+      </ScrollbarView>
     </View>
   );
 }

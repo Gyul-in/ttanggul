@@ -11,6 +11,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors } from '../theme';
+import { ScrollbarView } from '../components/ScrollbarView';
 import { AppText } from '../components/AppText';
 import { AppIcon } from '../components/AppIcon';
 
@@ -37,10 +38,9 @@ export default function AccountInfoScreen({ navigation }: Props) {
       </View>
 
       {/* Main Content */}
-      <ScrollView
+      <ScrollbarView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
       >
         <View style={styles.mainContainer}>
           {/* 이메일 섹션 */}
@@ -72,7 +72,7 @@ export default function AccountInfoScreen({ navigation }: Props) {
             <AppText variant="bodyL_M" color="gray700">로그아웃</AppText>
           </TouchableOpacity>
         </View>
-      </ScrollView>
+      </ScrollbarView>
 
       {/* 하단 영역 */}
       <View style={[styles.bottomArea, { paddingBottom: insets.bottom + 16 }]}>
