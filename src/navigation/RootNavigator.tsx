@@ -21,8 +21,8 @@ export default function RootNavigator() {
       <Stack.Screen name="OnboardingNotification" component={OnboardingNotificationScreen} />
       <Stack.Screen name="Main" component={TabNavigator} />
       <Stack.Screen name="AccountInfo" component={AccountInfoScreen} />
-      <Stack.Screen name="Clover" component={CloverScreen} />
-      <Stack.Screen name="LegalDetail" component={LegalDetailScreen} />
+      <Stack.Screen name="Clover" component={CloverScreen} options={{ animation: 'slide_from_right' }} />
+      <Stack.Screen name="LegalDetail" component={LegalDetailScreen} options={{ animation: 'slide_from_right' }} />
     </Stack.Navigator>
   );
 }
