@@ -435,7 +435,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
-    minHeight: 58,
+    height: 58,
   },
   listItemFirst: {
     borderTopLeftRadius: 16,

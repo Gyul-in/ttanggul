@@ -102,7 +102,7 @@ export default function NotificationScreen({ navigation }: Props) {
         title="알림"
         onBack={() => navigation.goBack()}
         rightIcon={hasNotifications ? 'pencil-fill' : undefined}
-        rightIconColor={colors.gray500}
+        rightIconColor="#A8ACA8"
         onRight={() => setIsEditMode(p => !p)}
       />
 
