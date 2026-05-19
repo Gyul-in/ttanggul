@@ -210,7 +210,7 @@ export default function SettingsScreen({ navigation }: Props) {
 
             <TouchableOpacity 
               style={styles.pointBadge}
-              onPress={() => navigation.navigate('Clover')}
+              onPress={() => navigation.getParent()?.navigate('Clover' as never)}
               activeOpacity={0.7}
             >
               <AppIcon name="clover" size={24} color={colors.primary} />

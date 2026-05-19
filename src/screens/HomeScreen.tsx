@@ -89,7 +89,7 @@ export default function HomeScreen({ navigation }: Props) {
         type="logo"
         pointCount={clovers}
         onBell={() => navigation.navigate('Notification')}
-        onClover={() => navigation.navigate('Clover')}
+        onClover={() => navigation.getParent()?.getParent()?.navigate('Clover' as never)}
       />
 
       <View style={[styles.body, {

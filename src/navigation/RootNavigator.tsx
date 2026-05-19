@@ -5,6 +5,7 @@ import OnboardingNicknameScreen from '../screens/OnboardingNicknameScreen';
 import OnboardingPreferenceScreen from '../screens/OnboardingPreferenceScreen';
 import OnboardingNotificationScreen from '../screens/OnboardingNotificationScreen';
 import AccountInfoScreen from '../screens/AccountInfoScreen';
+import CloverScreen from '../screens/CloverScreen';
 import TabNavigator from './TabNavigator';
 
 const Stack = createNativeStackNavigator();
@@ -19,6 +20,7 @@ export default function RootNavigator() {
       <Stack.Screen name="OnboardingNotification" component={OnboardingNotificationScreen} />
       <Stack.Screen name="Main" component={TabNavigator} />
       <Stack.Screen name="AccountInfo" component={AccountInfoScreen} />
+      <Stack.Screen name="Clover" component={CloverScreen} />
     </Stack.Navigator>
   );
 }
