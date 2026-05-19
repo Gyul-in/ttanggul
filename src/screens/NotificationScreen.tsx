@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { View, Text, FlatList, Pressable, ScrollView, StyleSheet, useWindowDimensions, Image } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
@@ -61,6 +61,8 @@ export default function NotificationScreen({ navigation }: Props) {
   const [sortLatest, setSortLatest] = useState(true);
   const [isEditMode, setIsEditMode] = useState(false);
   const { setTabBarVisible } = useUI();
+  const chipScrollRef = useRef<ScrollView>(null);
+  const chipOffsets = useRef<{ [key: string]: number }>({});
 
   useFocusEffect(
     useCallback(() => {
@@ -137,6 +139,7 @@ export default function NotificationScreen({ navigation }: Props) {
               <AppIcon name="menu-05" size={Math.round(16 * scale)} color={colors.gray500} />
             </Pressable>
             <ScrollView
+              ref={chipScrollRef}
               horizontal
               showsHorizontalScrollIndicator={false}
               style={{ flexShrink: 0 }}
@@ -147,7 +150,15 @@ export default function NotificationScreen({ navigation }: Props) {
                 return (
                   <Pressable
                     key={cat}
-                    onPress={() => setSelectedCategory(cat)}
+                    onLayout={(e) => { chipOffsets.current[cat] = e.nativeEvent.layout.x; }}
+                    onPress={() => {
+                      setSelectedCategory(cat);
+                      if (cat === '전체') {
+                        chipScrollRef.current?.scrollTo({ x: 0, animated: true });
+                      } else if (cat === '현실조언') {
+                        chipScrollRef.current?.scrollTo({ x: chipOffsets.current[cat] ?? 0, animated: true });
+                      }
+                    }}
                     style={[
                       styles.chip,
                       {

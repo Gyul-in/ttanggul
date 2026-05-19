@@ -6,10 +6,10 @@ import {
   TouchableOpacity,
   Pressable,
   Image,
+  useWindowDimensions,
 } from 'react-native';
 import { colors } from '../theme';
 import { AppText } from './AppText';
-import { AppIcon } from './AppIcon';
 
 interface CloverModalProps {
   visible: boolean;
@@ -17,25 +17,34 @@ interface CloverModalProps {
 }
 
 export default function CloverModal({ visible, onReceive }: CloverModalProps) {
+  const { width } = useWindowDimensions();
+  const scale = width / 402;
+
   return (
     <Modal
       visible={visible}
       transparent
       animationType="fade"
+      statusBarTranslucent
       onRequestClose={onReceive}
     >
       <View style={styles.overlay}>
-        {/* Do not dismiss on outside tap to force receiving */}
         <Pressable style={StyleSheet.absoluteFillObject} />
-        
-        <View style={styles.modalContainer}>
+
+        <View style={[styles.modalContainer, {
+          borderRadius: Math.round(16 * scale),
+          paddingTop: Math.round(24 * scale),
+          paddingHorizontal: Math.round(20 * scale),
+          paddingBottom: Math.round(20 * scale),
+          gap: Math.round(28 * scale),
+        }]}>
           <View style={styles.contentBlock}>
             <Image
               source={require('../assets/images/clover_modal_img.png')}
-              style={styles.headerImage}
+              style={{ width: Math.round(130 * scale), height: Math.round(130 * scale) }}
               resizeMode="contain"
             />
-            <View style={styles.textContainer}>
+            <View style={[styles.textContainer, { gap: Math.round(4 * scale) }]}>
               <AppText variant="subTitle" color="black" style={styles.title}>
                 <AppText variant="subTitle" color="primary" style={{ color: '#29903E' }}>행운의 네잎클로버</AppText>
                 {' 한 개 발견!'}
@@ -46,7 +55,11 @@ export default function CloverModal({ visible, onReceive }: CloverModalProps) {
             </View>
           </View>
 
-          <TouchableOpacity style={styles.button} activeOpacity={0.8} onPress={onReceive}>
+          <TouchableOpacity
+            style={[styles.button, { height: Math.round(56 * scale), borderRadius: Math.round(12 * scale) }]}
+            activeOpacity={0.8}
+            onPress={onReceive}
+          >
             <AppText variant="bodyXL_SB" color="white">
               고마워!
             </AppText>
@@ -66,14 +79,9 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   modalContainer: {
-    width: 337,
+    alignSelf: 'stretch',
     backgroundColor: colors.bgMain,
-    borderRadius: 16,
-    paddingTop: 24,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
     alignItems: 'stretch',
-    gap: 28,
   },
   contentBlock: {
     alignItems: 'center',

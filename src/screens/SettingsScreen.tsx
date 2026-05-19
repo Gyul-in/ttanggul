@@ -11,6 +11,7 @@ import {
   Pressable,
   Animated,
   Dimensions,
+  useWindowDimensions,
 } from 'react-native';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -94,6 +95,8 @@ const CATEGORY_ROWS = [
 
 export default function SettingsScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const scale = width / 402;
   const route = useRoute<RouteProp<{ Settings: { openQuoteSheet?: boolean; openTimeSheet?: boolean } }, 'Settings'>>();
 
   const preferredCategory = useUserStore((state) => state.preferredCategory);
@@ -251,11 +254,12 @@ export default function SettingsScreen({ navigation }: Props) {
         visible={quoteSheetVisible}
         transparent
         animationType="none"
+        statusBarTranslucent
         onRequestClose={() => setQuoteSheetVisible(false)}
       >
         <View style={styles.sheetContainer}>
           <Pressable style={StyleSheet.absoluteFillObject} onPress={() => setQuoteSheetVisible(false)} />
-          <Animated.View style={[styles.sheet, { transform: [{ translateY: slideAnim }], paddingBottom: insets.bottom }]}>
+          <Animated.View style={[styles.sheet, { transform: [{ translateY: slideAnim }] }]}>
             <View style={styles.sheetInner}>
               <View style={styles.sheetHandle} />
               <View style={styles.sheetContent}>
@@ -284,7 +288,7 @@ export default function SettingsScreen({ navigation }: Props) {
                 </View>
               </View>
             </View>
-            <View style={styles.sheetBtnContainer}>
+            <View style={[styles.sheetBtnContainer, { paddingBottom: Math.max(16, insets.bottom) }]}>
               <TouchableOpacity
                 style={styles.sheetSaveBtn}
                 activeOpacity={0.7}
@@ -456,12 +460,12 @@ const styles = StyleSheet.create({
   },
   sheet: {
     backgroundColor: colors.bgMain,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
   sheetInner: {
     paddingTop: 14,
-    paddingBottom: 14,
+    paddingBottom: 24,
     paddingHorizontal: 20,
     gap: 24,
   },
@@ -497,7 +501,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sheetBtnContainer: {
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
   sheetSaveBtn: {
     height: 56,
