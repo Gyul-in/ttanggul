@@ -6,14 +6,9 @@ import { StackActions } from '@react-navigation/native';
 import { colors } from '../theme';
 import { AppIcon } from '../components/AppIcon';
 import { AppText } from '../components/AppText';
-<<<<<<< HEAD
 import { useUI } from '../context/UIContext';
 import HomeStackNavigator from './HomeStackNavigator';
 import SaveStackNavigator from './SaveStackNavigator';
-=======
-import HomeScreen from '../screens/HomeScreen';
-import SaveScreen from '../screens/SaveScreen';
->>>>>>> 021acc2cb1618ea296ad6af5c035bfe6138e6c7c
 import SettingsScreen from '../screens/SettingsScreen';
 
 const Tab = createBottomTabNavigator();
