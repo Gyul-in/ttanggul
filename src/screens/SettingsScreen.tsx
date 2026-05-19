@@ -248,9 +248,9 @@ export default function SettingsScreen({ navigation }: Props) {
           <View style={styles.settingsGroup}>
             <SubHeader title="법적정보" />
             <View style={styles.listContainer}>
-              <SettingItem label="개인정보 처리방침" isFirst onPress={() => {}} />
-              <SettingItem label="이용 약관" onPress={() => {}} />
-              <SettingItem label="마케팅 정보 수신" isLast onPress={() => {}} />
+              <SettingItem label="개인정보 처리방침" isFirst onPress={() => navigation.navigate('LegalDetail', { title: '개인정보 처리방침' })} />
+              <SettingItem label="이용 약관" onPress={() => navigation.navigate('LegalDetail', { title: '이용 약관' })} />
+              <SettingItem label="마케팅 정보 수신" isLast onPress={() => navigation.navigate('LegalDetail', { title: '마케팅 정보 수신' })} />
             </View>
           </View>
 
