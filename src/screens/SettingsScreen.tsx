@@ -208,12 +208,16 @@ export default function SettingsScreen({ navigation }: Props) {
               </View>
             </View>
 
-            <View style={styles.pointBadge}>
+            <TouchableOpacity 
+              style={styles.pointBadge}
+              onPress={() => navigation.navigate('Clover')}
+              activeOpacity={0.7}
+            >
               <AppIcon name="clover" size={24} color={colors.primary} />
               <AppText variant="bodyL_SB" color="brown800">
                 {clovers}
               </AppText>
-            </View>
+            </TouchableOpacity>
           </View>
 
           <View style={styles.settingsGroup}>
