@@ -160,7 +160,7 @@ export default function SettingsScreen({ navigation }: Props) {
   }, [quoteSheetVisible, slideAnim]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView edges={['top']} style={styles.safeArea}>
       <View style={styles.navBar}>
         <AppText variant="subTitle" color="black">
           설정
@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 40,
+    paddingBottom: 120,
   },
   mainContainer: {
     paddingHorizontal: 20,
