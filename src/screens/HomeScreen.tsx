@@ -32,6 +32,8 @@ export default function HomeScreen({ navigation }: Props) {
   const addClover = useUserStore((state) => state.addClover);
   const lastCloverReceivedDate = useUserStore((state) => state.lastCloverReceivedDate);
   const setLastCloverReceivedDate = useUserStore((state) => state.setLastCloverReceivedDate);
+  const hasUnreadNotification = useUserStore((state) => state.hasUnreadNotification);
+  const setUnreadNotification = useUserStore((state) => state.setUnreadNotification);
 
   const [showCloverModal, setShowCloverModal] = useState(false);
 
@@ -88,8 +90,12 @@ export default function HomeScreen({ navigation }: Props) {
       <NavigationBar
         type="logo"
         pointCount={clovers}
-        onBell={() => navigation.navigate('Notification')}
+        onBell={() => {
+          setUnreadNotification(false);
+          navigation.navigate('Notification');
+        }}
         onClover={() => navigation.getParent()?.getParent()?.navigate('Clover' as never)}
+        hasNotification={hasUnreadNotification}
       />
 
       <View style={[styles.body, {

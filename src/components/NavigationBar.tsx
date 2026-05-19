@@ -17,6 +17,7 @@ type NavigationBarProps = {
   pointCount?: number;
   onBell?: () => void;
   onClover?: () => void;
+  hasNotification?: boolean;
 };
 
 export function NavigationBar({
@@ -31,6 +32,7 @@ export function NavigationBar({
   pointCount = 0,
   onBell,
   onClover,
+  hasNotification = false,
 }: NavigationBarProps) {
   const insets = useSafeAreaInsets();
 
@@ -44,8 +46,9 @@ export function NavigationBar({
               <AppIcon name="clover" size={24} color={colors.primary} />
               <AppText variant="bodyL_SB" color="brown800">{pointCount}</AppText>
             </Pressable>
-            <Pressable onPress={onBell} hitSlop={8}>
-              <AppIcon name="bell" size={24} color={colors.gray700} />
+            <Pressable onPress={onBell} hitSlop={8} style={styles.bellWrapper}>
+              <AppIcon name="bell" size={24} color="#A8ACA8" />
+              {hasNotification && <View style={styles.notificationDot} />}
             </Pressable>
           </View>
         </View>
@@ -101,5 +104,17 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     gap: 10,
     width: 69,
+  },
+  bellWrapper: {
+    position: 'relative',
+  },
+  notificationDot: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
+    backgroundColor: '#FF5959',
   },
 });

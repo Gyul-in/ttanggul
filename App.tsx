@@ -1,4 +1,5 @@
 import { useEffect, useCallback } from 'react';
+import { LogBox } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
@@ -8,6 +9,7 @@ import RootNavigator from './src/navigation/RootNavigator';
 import { SaveProvider } from './src/context/SaveContext';
 import { UIProvider } from './src/context/UIContext';
 
+LogBox.ignoreAllLogs();
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
