@@ -128,17 +128,19 @@ export default function SettingsScreen({ navigation }: Props) {
 
   useFocusEffect(
     useCallback(() => {
-      const params = route.params as any;
-      if (params?.openQuoteSheet) {
+      const openQuoteSheet = (route.params as any)?.openQuoteSheet;
+      const openTimeSheet = (route.params as any)?.openTimeSheet;
+      if (openQuoteSheet) {
         setLocalCategory(preferredCategory || '공감');
         setQuoteSheetVisible(true);
         navigation.setParams({ openQuoteSheet: undefined } as any);
       }
-      if (params?.openTimeSheet) {
+      if (openTimeSheet) {
         setTimeSheetVisible(true);
         navigation.setParams({ openTimeSheet: undefined } as any);
       }
-    }, [route.params])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [(route.params as any)?.openQuoteSheet, (route.params as any)?.openTimeSheet, navigation, preferredCategory])
   );
 
   useEffect(() => {

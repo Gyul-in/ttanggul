@@ -137,9 +137,15 @@ type Props = {
   visible: boolean;
   onClose: () => void;
   onConfirm: (time: string) => void;
+  showRandomOption?: boolean;
 };
 
-export default function TimePickerBottomSheet({ visible, onClose, onConfirm }: Props) {
+export default function TimePickerBottomSheet({
+  visible,
+  onClose,
+  onConfirm,
+  showRandomOption = true,
+}: Props) {
   const insets = useSafeAreaInsets();
   const [meridiem, setMeridiem] = useState(0); // 0=AM, 1=PM
   const [hour, setHour] = useState(5);          // 기본 06시 (0-based → index 5)
@@ -211,16 +217,20 @@ export default function TimePickerBottomSheet({ visible, onClose, onConfirm }: P
                 </View>
               </View>
 
-              <View style={styles.divider} />
+              {showRandomOption && (
+                <>
+                  <View style={styles.divider} />
 
-              <TouchableOpacity 
-                style={styles.checkboxRow} 
-                onPress={() => setIsRandom(!isRandom)} 
-                activeOpacity={0.7}
-              >
-                <AppIcon name={isRandom ? 'checkbox-m-on' : 'checkbox-m-off'} size={20} />
-                <Text style={styles.checkboxText}>랜덤 시간으로 하기</Text>
-              </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={styles.checkboxRow} 
+                    onPress={() => setIsRandom(!isRandom)} 
+                    activeOpacity={0.7}
+                  >
+                    <AppIcon name={isRandom ? 'checkbox-m-on' : 'checkbox-m-off'} size={20} />
+                    <Text style={styles.checkboxText}>랜덤 시간으로 설정</Text>
+                  </TouchableOpacity>
+                </>
+              )}
             </View>
           </View>
 

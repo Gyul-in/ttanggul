@@ -126,6 +126,7 @@ export default function OnboardingNotificationScreen({ navigation }: any) {
       </View>
       <TimePickerBottomSheet
         visible={showTimePicker}
+        showRandomOption={false}
         onClose={() => setShowTimePicker(false)}
         onConfirm={(time) => {
           setSelectedTime(time);
