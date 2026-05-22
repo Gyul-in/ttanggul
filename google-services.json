@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "788744506991",
+    "project_id": "ttanggul-d8e19",
+    "storage_bucket": "ttanggul-d8e19.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:788744506991:android:b26d3e9cb84e7c2705479a",
+        "android_client_info": {
+          "package_name": "com.anonymous.ddanggulapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGc1w6Hd79Wg0g1vSGuS5KUUaVCSdTDQc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
