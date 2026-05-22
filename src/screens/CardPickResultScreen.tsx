@@ -104,8 +104,8 @@ export default function CardPickResultScreen({ navigation }: Props) {
 
     return {
       position: 'absolute' as const,
-      left: '50%',
-      top: '50%',
+      left: '50%' as const,
+      top: '50%' as const,
       marginLeft: -p.width / 2,
       marginTop: -p.height / 2,
       width: p.width,

@@ -1,4 +1,4 @@
-import { View, Image, Pressable, StyleSheet, Animated } from 'react-native';
+import { View, Image, Pressable, StyleSheet, Animated, Share } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors } from '../theme';
@@ -18,7 +18,6 @@ const CURRENT_CARD = {
   text: '실패 경험은 면접에서 오히려 강점입니다. 어떻게 극복했는지가 핵심입니다.',
 };
 
-// 온보딩 선택값(#공감 등) → HomeCardType 매핑
 function toCardType(category: string | null): HomeCardType {
   const map: Record<string, HomeCardType> = {
     '#공감': '공감',
@@ -27,7 +26,8 @@ function toCardType(category: string | null): HomeCardType {
     '#현실조언': '현실조언',
     '#동기부여': '위로',
   };
-  return (category && map[category]) ?? '현실조언';
+  if (!category) return '현실조언';
+  return map[category] ?? '현실조언';
 }
 
 type Props = {
@@ -84,6 +84,8 @@ export default function HomeScreen({ navigation }: Props) {
 
   const preferredCategory = useUserStore((state) => state.preferredCategory);
   const cardType = toCardType(preferredCategory);
+  const frontBgColor = cardType === '현실조언' ? '#2A2F2B' : '#EEE5B8';
+  const backBgColor = colors.brown200;
   const cardPickCount = useUserStore((state) => state.cardPickCount);
   const dotCount = Math.min(Math.max(cardPickCount, 1), 4);
 
@@ -102,12 +104,21 @@ export default function HomeScreen({ navigation }: Props) {
   };
 
   const frontRotate = flipAnim.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: ['0deg', '90deg', '90deg'],
+    inputRange: [0, 1],
+    outputRange: ['0deg', '180deg'],
   });
   const backRotate = flipAnim.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: ['-90deg', '-90deg', '0deg'],
+    inputRange: [0, 1],
+    outputRange: ['-180deg', '0deg'],
+  });
+
+  const frontOpacity = flipAnim.interpolate({
+    inputRange: [0, 0.5, 0.5, 1],
+    outputRange: [1, 1, 0, 0],
+  });
+  const backOpacity = flipAnim.interpolate({
+    inputRange: [0, 0.5, 0.5, 1],
+    outputRange: [0, 0, 1, 1],
   });
 
   useEffect(() => {
@@ -138,6 +149,16 @@ export default function HomeScreen({ navigation }: Props) {
     if (isSaving) showToast();
   };
 
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: `[땅굴] 하루의 힘이 되는 말\n\n"${CURRENT_CARD.text}"`,
+      });
+    } catch (error) {
+      console.error('Share error:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <NavigationBar
@@ -157,39 +178,41 @@ export default function HomeScreen({ navigation }: Props) {
         <Pressable style={styles.banner} onPress={() => navigation.navigate('CardPick')}>
           <View style={styles.bannerLeft}>
             <CardIcon />
-            <AppText variant="bodyM_M" style={styles.bannerText}>카드를 더 뽑아보세요</AppText>
+            <AppText variant="bodyL_M" style={styles.bannerText}>카드를 더 뽑아보세요</AppText>
           </View>
-          <AppIcon name="chevron-right" size={24} color={colors.brown800} />
+          <AppIcon name="chevron-right" size={24} color="#A8ACA8" />
         </Pressable>
 
         {/* 카드 + 인디케이터 */}
         <View style={styles.contents}>
-          {/* 앞면 */}
-          <Animated.View style={[styles.cardFace, { transform: [{ rotateY: frontRotate }] }]}
-            pointerEvents={flipped ? 'none' : 'auto'}>
-            <HomeCard
-              type={cardType}
-              text={CURRENT_CARD.text}
-              category={preferredCategory?.replace('#', '') ?? '현실조언'}
-              liked={saved}
-              onFlip={handleFlip}
-              onLike={handleToggleSave}
-              onShare={() => {}}
-            />
-          </Animated.View>
-          {/* 뒷면 */}
-          <Animated.View style={[styles.cardFace, styles.cardFaceBack, { transform: [{ rotateY: backRotate }] }]}
-            pointerEvents={flipped ? 'auto' : 'none'}>
-            <HomeCard
-              type="Back"
-              text={CURRENT_CARD.text}
-              category={preferredCategory?.replace('#', '') ?? '현실조언'}
-              liked={saved}
-              onFlip={handleFlip}
-              onLike={handleToggleSave}
-              onShare={() => {}}
-            />
-          </Animated.View>
+          <View style={styles.cardContainer}>
+            {/* 앞면 */}
+            <Animated.View style={[styles.cardFace, { transform: [{ perspective: 1000 }, { rotateY: frontRotate }], opacity: frontOpacity, backgroundColor: frontBgColor }]}
+              pointerEvents={flipped ? 'none' : 'auto'}>
+              <HomeCard
+                type={cardType}
+                text={CURRENT_CARD.text}
+                category={preferredCategory?.replace('#', '') ?? '현실조언'}
+                liked={saved}
+                onFlip={handleFlip}
+                onLike={handleToggleSave}
+                onShare={handleShare}
+              />
+            </Animated.View>
+            {/* 뒷면 */}
+            <Animated.View style={[styles.cardFace, { transform: [{ perspective: 1000 }, { rotateY: backRotate }], opacity: backOpacity, backgroundColor: backBgColor }]}
+              pointerEvents={flipped ? 'auto' : 'none'}>
+              <HomeCard
+                type="Back"
+                text={CURRENT_CARD.text}
+                category={preferredCategory?.replace('#', '') ?? '현실조언'}
+                liked={saved}
+                onFlip={handleFlip}
+                onLike={handleToggleSave}
+                onShare={handleShare}
+              />
+            </Animated.View>
+          </View>
 
           {/* 도트 인디케이터: 뽑은 카드 수만큼 표시 (최대 4개) */}
           {dotCount > 1 && (() => {
@@ -209,7 +232,7 @@ export default function HomeScreen({ navigation }: Props) {
         {/* 하단 두듀 캐릭터 */}
         <View style={styles.dudueSection}>
           <Image
-            source={require('../assets/illustrations/home-dudue-peek.png')}
+            source={require('../assets/illustrations/home-dudue-peek.gif')}
             style={styles.dudueImage}
             resizeMode="contain"
           />
@@ -267,15 +290,22 @@ const styles = StyleSheet.create({
   contents: {
     alignItems: 'center',
     gap: 20,
+    overflow: 'visible',
   },
-  cardFace: {
+  cardContainer: {
     width: 300,
     height: 348,
-    backfaceVisibility: 'hidden',
+    overflow: 'visible',
   },
-  cardFaceBack: {
+  cardFace: {
     position: 'absolute',
     top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    borderRadius: 20,
+    overflow: 'visible',
+    backfaceVisibility: 'hidden',
   },
   dudueSection: {
     flex: 1,
@@ -284,8 +314,8 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   dudueImage: {
-    width: 136,
-    height: 94,
+    width: 260,
+    height: 180,
   },
   toast: {
     position: 'absolute',

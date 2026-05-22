@@ -46,7 +46,7 @@ const BG_LAYERS: Record<Exclude<HomeCardType, 'Back'>, ImageSourcePropType[]> = 
 };
 
 const CARD_BG: Record<HomeCardType, string> = {
-  현실조언: 'transparent',
+  현실조언: '#2A2F2B',
   위로: '#EEE5B8',
   공감: '#EEE5B8',
   명언: '#EEE5B8',
@@ -119,9 +119,9 @@ export default function HomeCard({
           activeOpacity={0.8}
         >
           <AppIcon
-            name={liked ? 'heart-filled' : 'heart'}
+            name="heart-filled"
             size={20}
-            color={liked ? '#F53434' : colors.brown700}
+            color={liked ? '#FF5959' : colors.brown300}
           />
         </TouchableOpacity>
       </View>

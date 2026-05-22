@@ -91,7 +91,7 @@ export default function TabNavigator() {
     <Tab.Navigator
       initialRouteName="Home"
       tabBar={(props) => <CustomTabBar {...props} />}
-      screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: '#F5F1E8' }, unmountOnBlur: true }}
+      screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: '#F5F1E8' }, unmountOnBlur: true } as any}
     >
       <Tab.Screen name="Save" component={SaveStackNavigator} />
       <Tab.Screen name="Home" component={HomeStackNavigator} />
