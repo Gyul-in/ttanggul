@@ -2,15 +2,13 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
-// TODO: 파이어베이스 프로젝트 생성 후 여기에 Config 키를 넣어야 합니다.
-// 추후 환경변수(.env)로 관리하도록 수정될 예정입니다.
 const firebaseConfig = {
-  apiKey: "API_KEY_HERE",
-  authDomain: "AUTH_DOMAIN_HERE",
-  projectId: "PROJECT_ID_HERE",
-  storageBucket: "STORAGE_BUCKET_HERE",
-  messagingSenderId: "MESSAGING_SENDER_ID_HERE",
-  appId: "APP_ID_HERE"
+  apiKey: "AIzaSyDG-UvuXWOLLtgPxVJF5gb_0qe5WjHeZPc",
+  authDomain: "ttanggul-d8e19.firebaseapp.com",
+  projectId: "ttanggul-d8e19",
+  storageBucket: "ttanggul-d8e19.firebasestorage.app",
+  messagingSenderId: "788744506991",
+  appId: "1:788744506991:web:c45238597674dbb205479a",
 };
 
 export const app = initializeApp(firebaseConfig);
