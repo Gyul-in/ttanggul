@@ -1,10 +1,11 @@
-import { View, Image, ImageBackground, Pressable, StyleSheet, useWindowDimensions, Animated } from 'react-native';
+import { View, Image, Pressable, StyleSheet, Animated } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors } from '../theme';
 import { NavigationBar } from '../components/NavigationBar';
 import { AppIcon } from '../components/AppIcon';
 import { AppText } from '../components/AppText';
+import HomeCard, { HomeCardType } from '../components/HomeCard';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useSave } from '../context/SaveContext';
 import CloverModal from '../components/CloverModal';
@@ -12,18 +13,57 @@ import { useUserStore } from '../store/useUserStore';
 import { useFocusEffect } from '@react-navigation/native';
 import { useUI } from '../context/UIContext';
 
-const DESIGN_WIDTH  = 402;
-const DESIGN_HEIGHT = 875;
-
 const CURRENT_CARD = {
   id: 'card-001',
   text: '실패 경험은 면접에서 오히려 강점입니다. 어떻게 극복했는지가 핵심입니다.',
-  category: '현실조언',
 };
+
+// 온보딩 선택값(#공감 등) → HomeCardType 매핑
+function toCardType(category: string | null): HomeCardType {
+  const map: Record<string, HomeCardType> = {
+    '#공감': '공감',
+    '#위로': '위로',
+    '#명언': '명언',
+    '#현실조언': '현실조언',
+    '#동기부여': '위로',
+  };
+  return (category && map[category]) ?? '현실조언';
+}
 
 type Props = {
   navigation: NativeStackNavigationProp<any>;
 };
+
+function CardIcon() {
+  return (
+    <View style={cardIconStyles.wrap}>
+      <View style={[cardIconStyles.card, cardIconStyles.cardBack]} />
+      <View style={[cardIconStyles.card, cardIconStyles.cardFront]} />
+    </View>
+  );
+}
+
+const cardIconStyles = StyleSheet.create({
+  wrap: { width: 24, height: 24 },
+  card: {
+    position: 'absolute',
+    width: 13,
+    height: 19,
+    borderRadius: 3,
+  },
+  cardBack: {
+    backgroundColor: colors.brown300,
+    left: 1,
+    top: 2,
+    transform: [{ rotate: '-16.73deg' }],
+  },
+  cardFront: {
+    backgroundColor: colors.brown200,
+    left: 8,
+    top: 1,
+    transform: [{ rotate: '4.19deg' }],
+  },
+});
 
 export default function HomeScreen({ navigation }: Props) {
   const { toggleSave, isSaved } = useSave();
@@ -35,7 +75,6 @@ export default function HomeScreen({ navigation }: Props) {
       setTabBarVisible(true);
     }, [setTabBarVisible])
   );
-  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const clovers = useUserStore((state) => state.clovers);
   const addClover = useUserStore((state) => state.addClover);
   const lastCloverReceivedDate = useUserStore((state) => state.lastCloverReceivedDate);
@@ -43,9 +82,33 @@ export default function HomeScreen({ navigation }: Props) {
   const hasUnreadNotification = useUserStore((state) => state.hasUnreadNotification);
   const setUnreadNotification = useUserStore((state) => state.setUnreadNotification);
 
+  const preferredCategory = useUserStore((state) => state.preferredCategory);
+  const cardType = toCardType(preferredCategory);
+  const cardPickCount = useUserStore((state) => state.cardPickCount);
+  const dotCount = Math.min(Math.max(cardPickCount, 1), 4);
+
   const [showCloverModal, setShowCloverModal] = useState(false);
-  const [showBanner, setShowBanner] = useState(true);
+  const [flipped, setFlipped] = useState(false);
   const toastOpacity = useRef(new Animated.Value(0)).current;
+  const flipAnim = useRef(new Animated.Value(0)).current;
+
+  const handleFlip = () => {
+    const toValue = flipped ? 0 : 1;
+    Animated.timing(flipAnim, {
+      toValue,
+      duration: 350,
+      useNativeDriver: true,
+    }).start(() => setFlipped(prev => !prev));
+  };
+
+  const frontRotate = flipAnim.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: ['0deg', '90deg', '90deg'],
+  });
+  const backRotate = flipAnim.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: ['-90deg', '-90deg', '0deg'],
+  });
 
   useEffect(() => {
     const today = new Date().toDateString();
@@ -69,47 +132,11 @@ export default function HomeScreen({ navigation }: Props) {
   };
 
   const handleToggleSave = () => {
-    toggleSave(CURRENT_CARD);
-    if (!saved) showToast();
+    const isSaving = !saved;
+    const category = preferredCategory?.replace('#', '') ?? '현실조언';
+    toggleSave({ ...CURRENT_CARD, category });
+    if (isSaving) showToast();
   };
-
-  const uiScale = Math.min(screenWidth / DESIGN_WIDTH, 1);
-
-  const cardHeight = Math.round(screenHeight * (348 / DESIGN_HEIGHT));
-  const cardWidth  = Math.min(
-    Math.round(cardHeight * (300 / 348)),
-    Math.round(screenWidth - 40),
-  );
-
-  const cardRadius    = Math.round(20 * uiScale);
-  const cardPadH      = Math.round(16 * uiScale);
-  const cardPadV      = Math.round(20 * uiScale);
-  const cardTextPT    = Math.round(68 * uiScale);
-  const cardBtnSize   = Math.round(32 * uiScale);
-  const cardBtnGap    = Math.round(12 * uiScale);
-  const cardIconSz    = Math.round(20 * uiScale);
-  const cardFontSz    = Math.round(24 * uiScale);
-  const cardLineH     = Math.round(36 * uiScale);
-  const cardFlipPadH  = Math.round(18 * uiScale);
-  const cardFlipPadV  = Math.round(14 * uiScale);
-  const cardHeartW    = Math.round(52 * uiScale);
-
-  const bodyPadH      = Math.round(20 * uiScale);
-  const bodyPadTop    = Math.round(10 * uiScale);
-  const bodyGap       = Math.round(20 * uiScale);
-  const contents01Gap = Math.round(30 * uiScale);
-
-  const bannerPadH    = Math.round(16 * uiScale);
-  const bannerPadV    = Math.round(14 * uiScale);
-  const bannerRadius  = Math.round(12 * uiScale);
-
-  const dotR       = Math.round(3  * uiScale);
-  const dotH       = dotR * 2;
-  const dotW       = Math.round(70 * uiScale);
-  const dotCenters = [3, 19, 35, 51, 67].map(x => Math.round(x * uiScale));
-
-  const dudueW = Math.round(136 * uiScale);
-  const dudueH = Math.round(94  * uiScale);
 
   return (
     <View style={styles.container}>
@@ -124,105 +151,78 @@ export default function HomeScreen({ navigation }: Props) {
         hasNotification={hasUnreadNotification}
       />
 
-      <View style={[styles.body, {
-        paddingHorizontal: bodyPadH,
-        paddingTop: bodyPadTop,
-        gap: bodyGap,
-      }]}>
+      <View style={styles.body}>
 
-        {/* 배너 */}
-        {showBanner && (
-          <Pressable
-            style={[styles.banner, {
-              paddingHorizontal: bannerPadH,
-              paddingVertical: bannerPadV,
-              borderRadius: bannerRadius,
-            }]}
-            onPress={() => navigation.navigate('CardPick')}
-          >
+        {/* 배너: 카드 더 뽑기 */}
+        <Pressable style={styles.banner} onPress={() => navigation.navigate('CardPick')}>
+          <View style={styles.bannerLeft}>
+            <CardIcon />
             <AppText variant="bodyM_M" style={styles.bannerText}>카드를 더 뽑아보세요</AppText>
-            <Pressable onPress={(e) => { e.stopPropagation(); setShowBanner(false); }} hitSlop={8}>
-              <AppIcon name="close" size={Math.round(24 * uiScale)} color={colors.gray300} />
-            </Pressable>
-          </Pressable>
-        )}
+          </View>
+          <AppIcon name="chevron-right" size={24} color={colors.brown800} />
+        </Pressable>
 
-        <View style={[styles.contents01, { gap: contents01Gap }]}>
-          <ImageBackground
-            source={require('../assets/illustrations/card-bg.png')}
-            style={{
-              width: cardWidth,
-              height: cardHeight,
-              borderRadius: cardRadius,
-              overflow: 'hidden',
-              paddingHorizontal: cardPadH,
-              paddingTop: cardPadV,
-              paddingBottom: cardPadV,
-            }}
-            imageStyle={{ borderRadius: cardRadius }}
-            resizeMode="cover"
-          >
-            <View style={[styles.cardBtns, { gap: cardBtnGap }]}>
-              <Pressable style={[styles.cardBtn, { width: cardBtnSize, height: cardBtnSize, borderRadius: cardBtnSize / 2 }]}>
-                <AppIcon name="send" size={cardIconSz} color="white" />
-              </Pressable>
-            </View>
+        {/* 카드 + 인디케이터 */}
+        <View style={styles.contents}>
+          {/* 앞면 */}
+          <Animated.View style={[styles.cardFace, { transform: [{ rotateY: frontRotate }] }]}
+            pointerEvents={flipped ? 'none' : 'auto'}>
+            <HomeCard
+              type={cardType}
+              text={CURRENT_CARD.text}
+              category={preferredCategory?.replace('#', '') ?? '현실조언'}
+              liked={saved}
+              onFlip={handleFlip}
+              onLike={handleToggleSave}
+              onShare={() => {}}
+            />
+          </Animated.View>
+          {/* 뒷면 */}
+          <Animated.View style={[styles.cardFace, styles.cardFaceBack, { transform: [{ rotateY: backRotate }] }]}
+            pointerEvents={flipped ? 'auto' : 'none'}>
+            <HomeCard
+              type="Back"
+              text={CURRENT_CARD.text}
+              category={preferredCategory?.replace('#', '') ?? '현실조언'}
+              liked={saved}
+              onFlip={handleFlip}
+              onLike={handleToggleSave}
+              onShare={() => {}}
+            />
+          </Animated.View>
 
-            <View style={[styles.cardTextArea, { paddingTop: cardTextPT }]}>
-              <AppText
-                variant="sectionTitle"
-                color="black"
-                style={[styles.cardText, { fontSize: cardFontSz, lineHeight: cardLineH }]}
-              >
-                {'실패 경험은 면접에서\n오히려 강점입니다. 어떻게\n극복 했는지가 핵심입니다.'}
-              </AppText>
-            </View>
-
-            <View style={[styles.cardBottomRow, { gap: Math.round(8 * uiScale) }]}>
-              <Pressable style={[styles.cardFlipBtn, { paddingHorizontal: cardFlipPadH, paddingVertical: cardFlipPadV, borderRadius: Math.round(12 * uiScale) }]}>
-                <AppText variant="bodyM_SB" color="white">카드 뒤집기</AppText>
-              </Pressable>
-              <Pressable
-                style={[styles.cardHeartBtn, {
-                  width: cardHeartW,
-                  height: cardHeartW,
-                  borderRadius: Math.round(12 * uiScale),
-                  backgroundColor: saved ? colors.error : colors.bgMain,
-                }]}
-                onPress={handleToggleSave}
-              >
-                <AppIcon
-                  name={saved ? 'heart-filled' : 'heart'}
-                  size={cardIconSz}
-                  color={saved ? colors.white : colors.gray900}
-                />
-              </Pressable>
-            </View>
-          </ImageBackground>
-
-          <Svg width={dotW} height={dotH} viewBox={`0 0 ${dotW} ${dotH}`}>
-            {dotCenters.map((cx, i) => (
-              <Circle key={i} cx={cx} cy={dotR} r={dotR}
-                fill={i === 1 ? colors.brown600 : colors.bgInput} />
-            ))}
-          </Svg>
+          {/* 도트 인디케이터: 뽑은 카드 수만큼 표시 (최대 4개) */}
+          {dotCount > 1 && (() => {
+            const dotCx = Array.from({ length: dotCount }, (_, i) => 3 + i * 16);
+            const svgW = 6 + (dotCount - 1) * 16;
+            return (
+              <Svg width={svgW} height={6} viewBox={`0 0 ${svgW} 6`}>
+                {dotCx.map((cx, i) => (
+                  <Circle key={i} cx={cx} cy={3} r={3}
+                    fill={i === 0 ? colors.brown600 : colors.bgInput} />
+                ))}
+              </Svg>
+            );
+          })()}
         </View>
 
-        {/* 두듀 + 토스트 */}
+        {/* 하단 두듀 캐릭터 */}
         <View style={styles.dudueSection}>
           <Image
-            source={require('../assets/illustrations/Half_dudue.png')}
-            style={{ width: dudueW, height: dudueH }}
+            source={require('../assets/illustrations/home-dudue-peek.png')}
+            style={styles.dudueImage}
             resizeMode="contain"
           />
-          <Animated.View style={[styles.toast, { opacity: toastOpacity }]}>
-            <AppIcon name="check" size={20} color={colors.white} />
-            <AppText variant="bodyM_SB" style={styles.toastText}>
-              '{CURRENT_CARD.category}' 보관함에 저장했어요
-            </AppText>
-          </Animated.View>
         </View>
       </View>
+
+      {/* 저장 토스트 - 보관함 삭제 토스트와 동일한 위치 */}
+      <Animated.View style={[styles.toast, { opacity: toastOpacity }]} pointerEvents="none">
+        <AppIcon name="check" size={24} color={colors.white} />
+        <AppText variant="bodyM_SB" style={styles.toastText}>
+          '{preferredCategory?.replace('#', '') ?? '현실조언'}' 보관함에 저장했어요
+        </AppText>
+      </Animated.View>
 
       <CloverModal
         visible={showCloverModal}
@@ -239,6 +239,9 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    gap: 20,
     alignItems: 'center',
   },
   banner: {
@@ -247,44 +250,32 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderRadius: 12,
+  },
+  bannerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    flex: 1,
   },
   bannerText: {
+    color: colors.brown800,
     flex: 1,
-    color: '#393B38',
   },
-  contents01: {
+  contents: {
     alignItems: 'center',
+    gap: 20,
   },
-  cardBtns: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+  cardFace: {
+    width: 300,
+    height: 348,
+    backfaceVisibility: 'hidden',
   },
-  cardBtn: {
-    backgroundColor: 'rgba(57,59,56,0.4)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cardTextArea: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  cardText: {
-    textAlign: 'center',
-    letterSpacing: -0.24,
-  },
-  cardBottomRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  cardFlipBtn: {
-    flex: 1,
-    backgroundColor: colors.gray900,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cardHeartBtn: {
-    alignItems: 'center',
-    justifyContent: 'center',
+  cardFaceBack: {
+    position: 'absolute',
+    top: 0,
   },
   dudueSection: {
     flex: 1,
@@ -292,7 +283,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 10,
   },
+  dudueImage: {
+    width: 136,
+    height: 94,
+  },
   toast: {
+    position: 'absolute',
+    bottom: 20,
+    alignSelf: 'center',
     flexDirection: 'row',
     alignItems: 'center',
     gap: 7,
