@@ -90,7 +90,6 @@ export default function CardPickScreen({ navigation }: Props) {
   useFocusEffect(
     useCallback(() => {
       setTabBarVisible(false);
-      return () => setTabBarVisible(true);
     }, [setTabBarVisible])
   );
 
@@ -260,11 +259,10 @@ export default function CardPickScreen({ navigation }: Props) {
             onPress={() => {
                 if (remaining === 0) {
                   triggerToast();
-                  setTimeout(() => navigation.goBack(), 2000);
                 } else {
                   useCardPick();
                   setSelectedIdx(null);
-                  navigation.goBack();
+                  navigation.navigate('CardPickResult');
                 }
               }}
           >

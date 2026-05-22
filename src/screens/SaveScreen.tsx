@@ -1,10 +1,12 @@
+import { useCallback } from 'react';
 import { View, StyleSheet, FlatList, Pressable, Image, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Svg, { Path } from 'react-native-svg';
 import { AppText } from '../components/AppText';
 import { colors } from '../theme';
+import { useUI } from '../context/UIContext';
 
 const CATEGORIES = [
   { id: '공감', name: '공감', image: require('../assets/illustrations/save-dudue-gongam.png') },
@@ -63,6 +65,14 @@ function CategoryCard({ item, cardSize, scale }: { item: Category; cardSize: num
 }
 
 export default function SaveScreen() {
+  const { setTabBarVisible } = useUI();
+
+  useFocusEffect(
+    useCallback(() => {
+      setTabBarVisible(true);
+    }, [setTabBarVisible])
+  );
+
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const scale = width / 402;

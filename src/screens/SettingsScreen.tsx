@@ -20,6 +20,7 @@ import Svg, { Ellipse } from 'react-native-svg';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useRoute, RouteProp } from '@react-navigation/native';
 import { colors } from '../theme';
+import { useUI } from '../context/UIContext';
 import { AppText } from '../components/AppText';
 import { AppIcon } from '../components/AppIcon';
 import TimePickerBottomSheet from '../components/TimePickerBottomSheet';
@@ -95,6 +96,7 @@ const CATEGORY_ROWS = [
 ];
 
 export default function SettingsScreen({ navigation }: Props) {
+  const { setTabBarVisible } = useUI();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const scale = width / 402;
@@ -129,6 +131,7 @@ export default function SettingsScreen({ navigation }: Props) {
 
   useFocusEffect(
     useCallback(() => {
+      setTabBarVisible(true);
       const openQuoteSheet = (route.params as any)?.openQuoteSheet;
       const openTimeSheet = (route.params as any)?.openTimeSheet;
       if (openQuoteSheet) {

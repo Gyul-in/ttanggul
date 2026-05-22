@@ -5,10 +5,12 @@ import { colors } from '../theme';
 import { NavigationBar } from '../components/NavigationBar';
 import { AppIcon } from '../components/AppIcon';
 import { AppText } from '../components/AppText';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useSave } from '../context/SaveContext';
 import CloverModal from '../components/CloverModal';
 import { useUserStore } from '../store/useUserStore';
+import { useFocusEffect } from '@react-navigation/native';
+import { useUI } from '../context/UIContext';
 
 const DESIGN_WIDTH  = 402;
 const DESIGN_HEIGHT = 875;
@@ -26,6 +28,13 @@ type Props = {
 export default function HomeScreen({ navigation }: Props) {
   const { toggleSave, isSaved } = useSave();
   const saved = isSaved(CURRENT_CARD.id);
+  const { setTabBarVisible } = useUI();
+
+  useFocusEffect(
+    useCallback(() => {
+      setTabBarVisible(true);
+    }, [setTabBarVisible])
+  );
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const clovers = useUserStore((state) => state.clovers);
   const addClover = useUserStore((state) => state.addClover);

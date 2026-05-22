@@ -25,9 +25,9 @@ export default function TermsBottomSheet({ visible, onClose, onConfirm }: Props)
   const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
-  const [privacyAgreed, setPrivacyAgreed] = useState(false);
-  const [thirdPartyAgreed, setThirdPartyAgreed] = useState(false);
-  const [marketingAgreed, setMarketingAgreed] = useState(false);
+  const [privacyAgreed, setPrivacyAgreed] = useState(true);
+  const [thirdPartyAgreed, setThirdPartyAgreed] = useState(true);
+  const [marketingAgreed, setMarketingAgreed] = useState(true);
 
   const allAgreed = privacyAgreed && thirdPartyAgreed && marketingAgreed;
   const isCtaEnabled = privacyAgreed && thirdPartyAgreed;
@@ -97,11 +97,23 @@ export default function TermsBottomSheet({ visible, onClose, onConfirm }: Props)
               activeOpacity={0.8}
               onPress={handleToggleAll}
             >
-              <AppIcon
-                name={allAgreed ? 'checkbox-m-on' : 'checkbox-m-off'}
-                size={20}
-                color={allAgreed ? theme.colors.brown100 : theme.colors.brown300}
-              />
+              <View style={{ position: 'relative', width: 20, height: 20, justifyContent: 'center', alignItems: 'center' }}>
+                <AppIcon
+                  name={allAgreed ? 'checkbox-m-on' : 'checkbox-m-off'}
+                  size={20}
+                  color={allAgreed ? theme.colors.brown100 : theme.colors.brown300}
+                />
+                {!allAgreed && (
+                  <View style={{ position: 'absolute', justifyContent: 'center', alignItems: 'center' }}>
+                    <AppIcon
+                      name="check"
+                      size={12}
+                      strokeWidth={3}
+                      color={theme.colors.brown300}
+                    />
+                  </View>
+                )}
+              </View>
               <Text style={[styles.allAgreeText, allAgreed && styles.allAgreeTextActive]}>
                 약관 전체 동의
               </Text>
@@ -149,7 +161,7 @@ function TermItem({ title, checked, onToggle }: { title: string; checked: boolea
         <AppIcon
           name="check"
           size={16}
-          strokeWidth={2}
+          strokeWidth={3}
           color={checked ? theme.colors.primary : theme.colors.brown300}
         />
         <Text style={styles.termTitle}>{title}</Text>
