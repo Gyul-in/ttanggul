@@ -12,7 +12,20 @@
           "package_name": "com.anonymous.ddanggulapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "788744506991-l49kcmjf44f62g53ojm1ttvoqdb031qu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.anonymous.ddanggulapp",
+            "certificate_hash": "b4d62593a5930b372a164331ff56eed4d8d86d44"
+          }
+        },
+        {
+          "client_id": "788744506991-pjrkcpf2i1hi8331fgekpbq9307ka8da.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBGc1w6Hd79Wg0g1vSGuS5KUUaVCSdTDQc"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "788744506991-pjrkcpf2i1hi8331fgekpbq9307ka8da.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

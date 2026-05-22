@@ -14,6 +14,8 @@ import { colors } from '../theme';
 import { ScrollbarView } from '../components/ScrollbarView';
 import { AppText } from '../components/AppText';
 import { AppIcon } from '../components/AppIcon';
+import { auth } from '../services/firebase';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 type Props = {
   navigation: NativeStackNavigationProp<any>;
@@ -23,6 +25,31 @@ export default function AccountInfoScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+
+  const user = auth.currentUser;
+  const email = user?.email ?? '';
+  const providerId = user?.providerData?.[0]?.providerId;
+  const providerLabel = providerId === 'google.com' ? 'Google' : providerId === 'kakao.com' ? 'Kakao' : '소셜 로그인';
+
+  const handleLogout = async () => {
+    try {
+      if (providerId === 'google.com') await GoogleSignin.signOut();
+      await auth.signOut();
+      navigation.reset({ index: 0, routes: [{ name: 'Splash' }] });
+    } catch (e) {
+      navigation.reset({ index: 0, routes: [{ name: 'Splash' }] });
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      if (providerId === 'google.com') await GoogleSignin.signOut();
+      await user?.delete();
+      navigation.reset({ index: 0, routes: [{ name: 'Splash' }] });
+    } catch (e) {
+      navigation.reset({ index: 0, routes: [{ name: 'Splash' }] });
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -49,7 +76,7 @@ export default function AccountInfoScreen({ navigation }: Props) {
               <AppText variant="bodyS_SB" color="gray600">이메일</AppText>
             </View>
             <View style={styles.listItem}>
-              <AppText variant="bodyL_M" color="gray900">dudue@gmail.com</AppText>
+              <AppText variant="bodyL_M" color="gray900">{email}</AppText>
             </View>
           </View>
 
@@ -59,7 +86,7 @@ export default function AccountInfoScreen({ navigation }: Props) {
               <AppText variant="bodyS_SB" color="gray600">로그인 정보</AppText>
             </View>
             <View style={styles.listItem}>
-              <AppText variant="bodyL_M" color="gray900">Google</AppText>
+              <AppText variant="bodyL_M" color="gray900">{providerLabel}</AppText>
             </View>
           </View>
 
@@ -109,7 +136,7 @@ export default function AccountInfoScreen({ navigation }: Props) {
               <TouchableOpacity
                 style={styles.modalBtnLogout}
                 activeOpacity={0.7}
-                onPress={() => navigation.reset({ index: 0, routes: [{ name: 'Splash' }] })}
+                onPress={handleDeleteAccount}
               >
                 <AppText variant="bodyXL_SB" color="gray700">탈퇴하기</AppText>
               </TouchableOpacity>
@@ -153,7 +180,7 @@ export default function AccountInfoScreen({ navigation }: Props) {
               <TouchableOpacity
                 style={styles.modalBtnLogout}
                 activeOpacity={0.7}
-                onPress={() => navigation.reset({ index: 0, routes: [{ name: 'Splash' }] })}
+                onPress={handleLogout}
               >
                 <AppText variant="bodyXL_SB" color="gray700">로그아웃</AppText>
               </TouchableOpacity>

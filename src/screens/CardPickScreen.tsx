@@ -300,7 +300,7 @@ export default function CardPickScreen({ navigation }: Props) {
                 </AppText>
                 <View style={{ gap: 0 }}>
                   {[
-                    { pre: '매일 ', bold: '최대 4번', post: '까지 새로운 카드를 뽑을 수 있어요', hasBold: true },
+                    { pre: '매일 ', bold: '최대 3번', post: '까지 새로운 카드를 뽑을 수 있어요', hasBold: true },
                     { pre: '카드를 뽑으면 오늘 ', bold: '하루 동안', post: ' 홈 화면에 고정돼요', hasBold: true },
                     { pre: '매일 자정(24:00)이 되면 뽑기 기회가 새롭게 초기화돼요', bold: '', post: '', hasBold: false },
                   ].map(({ pre, bold, post, hasBold }, i) => (

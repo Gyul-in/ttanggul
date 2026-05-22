@@ -1,9 +1,36 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../theme';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { auth } from '../services/firebase';
+
+GoogleSignin.configure({
+  webClientId: '788744506991-pjrkcpf2i1hi8331fgekpbq9307ka8da.apps.googleusercontent.com',
+});
 
 export default function LoginScreen({ navigation }: any) {
+  const [loading, setLoading] = useState(false);
+
+  const handleGoogleLogin = async () => {
+    try {
+      setLoading(true);
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      const idToken = userInfo.data?.idToken;
+      if (!idToken) throw new Error('ID 토큰을 가져오지 못했어요');
+      const credential = GoogleAuthProvider.credential(idToken);
+      await signInWithCredential(auth, credential);
+      navigation.replace('OnboardingNickname');
+    } catch (error: any) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) return;
+      Alert.alert('로그인 실패', '구글 로그인 중 오류가 발생했어요. 다시 시도해주세요.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleLogin = () => {
     navigation.replace('OnboardingNickname');
   };
@@ -39,9 +66,15 @@ export default function LoginScreen({ navigation }: any) {
               <Image source={require('../assets/images/icon_kakao.png')} style={styles.buttonIcon} />
               <Text style={styles.kakaoText}>카카오톡으로 계속하기</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.loginButton, styles.googleButton]} onPress={handleLogin} activeOpacity={0.8}>
-              <Image source={require('../assets/images/icon_google.png')} style={styles.buttonIcon} />
-              <Text style={styles.googleText}>구글로 계속하기</Text>
+            <TouchableOpacity style={[styles.loginButton, styles.googleButton]} onPress={handleGoogleLogin} activeOpacity={0.8} disabled={loading}>
+              {loading ? (
+                <ActivityIndicator size="small" color="#424242" />
+              ) : (
+                <>
+                  <Image source={require('../assets/images/icon_google.png')} style={styles.buttonIcon} />
+                  <Text style={styles.googleText}>구글로 계속하기</Text>
+                </>
+              )}
             </TouchableOpacity>
           </View>
 
