@@ -121,10 +121,10 @@ export default function OnboardingNicknameScreen({ navigation }: any) {
         <TouchableOpacity
           style={[
             styles.ctaButton,
-            nickname.trim().length === 0 && styles.ctaButtonDisabled,
+            (nickname.trim().length === 0 || hasError) && styles.ctaButtonDisabled,
           ]}
           onPress={handleNext}
-          disabled={nickname.trim().length === 0}
+          disabled={nickname.trim().length === 0 || hasError}
         >
           <Text style={styles.ctaButtonText}>다음</Text>
         </TouchableOpacity>
