@@ -20,12 +20,14 @@ interface UserState {
   nickname: string;
   preferredCategory: string | null;
   notificationTime: string | null;
+  isNotificationOn: boolean;
   clovers: number;
   lastCloverReceivedDate: string | null;
   notifications: NotificationItem[];
   setNickname: (nickname: string) => void;
   setPreferredCategory: (category: string) => void;
-  setNotificationTime: (time: string) => void;
+  setNotificationTime: (time: string | null) => void;
+  setNotificationOn: (enabled: boolean) => void;
   addClover: () => void;
   setLastCloverReceivedDate: (date: string) => void;
   deleteNotification: (id: string) => void;
@@ -40,6 +42,7 @@ export const useUserStore = create<UserState>((set) => ({
   nickname: '',
   preferredCategory: null,
   notificationTime: null,
+  isNotificationOn: false,
   clovers: 0,
   lastCloverReceivedDate: null,
   notifications: INITIAL_NOTIFICATIONS,
@@ -47,6 +50,7 @@ export const useUserStore = create<UserState>((set) => ({
   setNickname: (nickname) => set({ nickname }),
   setPreferredCategory: (category) => set({ preferredCategory: category }),
   setNotificationTime: (time) => set({ notificationTime: time }),
+  setNotificationOn: (enabled) => set({ isNotificationOn: enabled }),
   addClover: () => set((state) => ({ clovers: state.clovers + 1 })),
   setLastCloverReceivedDate: (date) => set({ lastCloverReceivedDate: date }),
   deleteNotification: (id) =>

@@ -60,7 +60,7 @@ export default function OnboardingPreferenceScreen({ navigation }: any) {
       if (tagLabel) {
         setPreferredCategory(tagLabel);
       }
-      navigation.navigate('OnboardingNotification');
+      navigation.navigate('OnboardingPermission');
     }
   };
 

@@ -33,6 +33,7 @@ export default function OnboardingNotificationScreen({ navigation }: any) {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const insets = useSafeAreaInsets();
   const setNotificationTime = useUserStore((state) => state.setNotificationTime);
+  const setNotificationOn = useUserStore((state) => state.setNotificationOn);
 
   const handleOptionSelect = (id: string) => {
     setSelectedOption(id);
@@ -44,8 +45,10 @@ export default function OnboardingNotificationScreen({ navigation }: any) {
   const handleComplete = () => {
     if (selectedOption === 'random') {
       setNotificationTime('랜덤');
+      setNotificationOn(true);
     } else if (selectedOption === 'fixed' && selectedTime) {
       setNotificationTime(selectedTime);
+      setNotificationOn(true);
     }
     navigation.navigate('Main');
   };

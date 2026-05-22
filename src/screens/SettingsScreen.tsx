@@ -12,7 +12,9 @@ import {
   Animated,
   Dimensions,
   useWindowDimensions,
+  Alert,
 } from 'react-native';
+import * as Notifications from 'expo-notifications';
 import { ScrollbarView } from '../components/ScrollbarView';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -106,10 +108,11 @@ export default function SettingsScreen({ navigation }: Props) {
   const setPreferredCategory = useUserStore((state) => state.setPreferredCategory);
   const notificationTime = useUserStore((state) => state.notificationTime);
   const setNotificationTime = useUserStore((state) => state.setNotificationTime);
+  const isNotificationOn = useUserStore((state) => state.isNotificationOn);
+  const setNotificationOn = useUserStore((state) => state.setNotificationOn);
   const nickname = useUserStore((state) => state.nickname);
   const clovers = useUserStore((state) => state.clovers);
 
-  const [isNotificationOn, setIsNotificationOn] = useState(true);
   const [quoteSheetVisible, setQuoteSheetVisible] = useState(false);
   const [localCategory, setLocalCategory] = useState(preferredCategory || '공감');
   const [timeSheetVisible, setTimeSheetVisible] = useState(false);
@@ -127,6 +130,71 @@ export default function SettingsScreen({ navigation }: Props) {
       Animated.delay(1800),
       Animated.timing(toastOpacity, { toValue: 0, duration: 300, useNativeDriver: true }),
     ]).start();
+  };
+
+  const handleToggleNotification = async (newValue: boolean) => {
+    if (newValue) {
+      try {
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+
+        if (existingStatus !== 'granted') {
+          const { status } = await Notifications.requestPermissionsAsync();
+          finalStatus = status;
+        }
+
+        if (finalStatus === 'granted') {
+          setNotificationOn(true);
+          if (!notificationTime) {
+            setNotificationTime('11:00 PM');
+          }
+        } else {
+          setNotificationOn(false);
+          Alert.alert(
+            '알림 권한 필요',
+            '알림을 받으시려면 기기 설정에서 알림 권한을 허용해 주세요.',
+            [{ text: '확인' }]
+          );
+        }
+      } catch (error) {
+        console.log('Error requesting notification permission on toggle:', error);
+        setNotificationOn(false);
+      }
+    } else {
+      setNotificationOn(false);
+    }
+  };
+
+  const handlePressNotificationTime = async () => {
+    if (!isNotificationOn) {
+      try {
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+
+        if (existingStatus !== 'granted') {
+          const { status } = await Notifications.requestPermissionsAsync();
+          finalStatus = status;
+        }
+
+        if (finalStatus === 'granted') {
+          setNotificationOn(true);
+          if (!notificationTime) {
+            setNotificationTime('11:00 PM');
+          }
+          setTimeSheetVisible(true);
+        } else {
+          Alert.alert(
+            '알림 권한 필요',
+            '알림을 설정하시려면 기기 설정에서 알림 권한을 허용해 주세요.',
+            [{ text: '확인' }]
+          );
+        }
+      } catch (error) {
+        console.log('Error requesting notification permission on time press:', error);
+      }
+    } else {
+      setTimeSheetVisible(true);
+    }
   };
 
   useFocusEffect(
@@ -235,7 +303,7 @@ export default function SettingsScreen({ navigation }: Props) {
                 rightElement={
                   <Switch
                     value={isNotificationOn}
-                    onValueChange={setIsNotificationOn}
+                    onValueChange={handleToggleNotification}
                     trackColor={{ false: colors.gray100, true: colors.primary }}
                     thumbColor={colors.white}
                     ios_backgroundColor={colors.gray100}
@@ -243,7 +311,11 @@ export default function SettingsScreen({ navigation }: Props) {
                   />
                 }
               />
-              <SettingItem label="알림 시간" value={notificationTime || '11:00 PM'} onPress={() => setTimeSheetVisible(true)} />
+              <SettingItem
+                label="알림 시간"
+                value={isNotificationOn && notificationTime ? notificationTime : undefined}
+                onPress={handlePressNotificationTime}
+              />
               <SettingItem label="글귀" value={preferredCategory?.replace('#', '') || '공감'} isLast onPress={() => setQuoteSheetVisible(true)} />
             </View>
           </View>

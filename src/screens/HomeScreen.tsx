@@ -1,5 +1,7 @@
-import { View, Image, Pressable, StyleSheet, Animated, Share } from 'react-native';
+import { View, Image, Pressable, StyleSheet, Animated } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
+import { captureRef } from 'react-native-view-shot';
+import * as Sharing from 'expo-sharing';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors } from '../theme';
 import { NavigationBar } from '../components/NavigationBar';
@@ -69,6 +71,8 @@ export default function HomeScreen({ navigation }: Props) {
   const { toggleSave, isSaved } = useSave();
   const saved = isSaved(CURRENT_CARD.id);
   const { setTabBarVisible } = useUI();
+  const frontCardRef = useRef<any>(null);
+  const backCardRef = useRef<any>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -151,9 +155,23 @@ export default function HomeScreen({ navigation }: Props) {
 
   const handleShare = async () => {
     try {
-      await Share.share({
-        message: `[땅굴] 하루의 힘이 되는 말\n\n"${CURRENT_CARD.text}"`,
+      const targetRef = flipped ? backCardRef : frontCardRef;
+      if (!targetRef.current) return;
+
+      const uri = await captureRef(targetRef, {
+        format: 'png',
+        quality: 1.0,
       });
+
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri, {
+          mimeType: 'image/png',
+          dialogTitle: '땅굴 행운 카드 공유',
+          UTI: 'public.png',
+        });
+      } else {
+        console.log('Sharing is not available on this platform');
+      }
     } catch (error) {
       console.error('Share error:', error);
     }
@@ -186,10 +204,11 @@ export default function HomeScreen({ navigation }: Props) {
         {/* 카드 + 인디케이터 */}
         <View style={styles.contents}>
           <View style={styles.cardContainer}>
-            {/* 앞면 */}
+             {/* 앞면 */}
             <Animated.View style={[styles.cardFace, { transform: [{ perspective: 1000 }, { rotateY: frontRotate }], opacity: frontOpacity, backgroundColor: frontBgColor }]}
               pointerEvents={flipped ? 'none' : 'auto'}>
               <HomeCard
+                ref={frontCardRef}
                 type={cardType}
                 text={CURRENT_CARD.text}
                 category={preferredCategory?.replace('#', '') ?? '현실조언'}
@@ -203,6 +222,7 @@ export default function HomeScreen({ navigation }: Props) {
             <Animated.View style={[styles.cardFace, { transform: [{ perspective: 1000 }, { rotateY: backRotate }], opacity: backOpacity, backgroundColor: backBgColor }]}
               pointerEvents={flipped ? 'auto' : 'none'}>
               <HomeCard
+                ref={backCardRef}
                 type="Back"
                 text={CURRENT_CARD.text}
                 category={preferredCategory?.replace('#', '') ?? '현실조언'}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, forwardRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -53,7 +53,7 @@ const CARD_BG: Record<HomeCardType, string> = {
   Back: colors.brown200,
 };
 
-export default function HomeCard({
+export default forwardRef<View, HomeCardProps>(function HomeCard({
   type = '현실조언',
   text,
   category = '현실조언',
@@ -61,14 +61,14 @@ export default function HomeCard({
   onFlip,
   onLike,
   onShare,
-}: HomeCardProps) {
+}: HomeCardProps, ref) {
   const [liked, setLiked] = useState(initialLiked);
   const isBack = type === 'Back';
   const textColor = type === '현실조언' ? colors.white : colors.black;
   const bgLayers = isBack ? [] : BG_LAYERS[type] ?? [];
 
   return (
-    <View style={[styles.card, { backgroundColor: CARD_BG[type] }]}>
+    <View ref={ref} style={[styles.card, { backgroundColor: CARD_BG[type] }]}>
       {/* 배경 이미지 레이어 */}
       {bgLayers.map((src, i) => (
         <Image key={i} source={src} style={styles.bgImage} resizeMode="cover" />
@@ -127,7 +127,7 @@ export default function HomeCard({
       </View>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   card: {

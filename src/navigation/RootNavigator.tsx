@@ -3,6 +3,7 @@ import SplashScreen from '../screens/SplashScreen';
 import LoginScreen from '../screens/LoginScreen';
 import OnboardingNicknameScreen from '../screens/OnboardingNicknameScreen';
 import OnboardingPreferenceScreen from '../screens/OnboardingPreferenceScreen';
+import OnboardingPermissionScreen from '../screens/OnboardingPermissionScreen';
 import OnboardingNotificationScreen from '../screens/OnboardingNotificationScreen';
 import AccountInfoScreen from '../screens/AccountInfoScreen';
 import CloverScreen from '../screens/CloverScreen';
@@ -18,6 +19,7 @@ export default function RootNavigator() {
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="OnboardingNickname" component={OnboardingNicknameScreen} />
       <Stack.Screen name="OnboardingPreference" component={OnboardingPreferenceScreen} />
+      <Stack.Screen name="OnboardingPermission" component={OnboardingPermissionScreen} />
       <Stack.Screen name="OnboardingNotification" component={OnboardingNotificationScreen} />
       <Stack.Screen name="Main" component={TabNavigator} />
       <Stack.Screen name="AccountInfo" component={AccountInfoScreen} />
