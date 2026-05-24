@@ -16,6 +16,7 @@ import { AppText } from '../components/AppText';
 import { AppIcon } from '../components/AppIcon';
 import { auth } from '../services/firebase';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { logout as kakaoLogout } from '@react-native-kakao/user';
 
 type Props = {
   navigation: NativeStackNavigationProp<any>;
@@ -27,13 +28,15 @@ export default function AccountInfoScreen({ navigation }: Props) {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
   const user = auth.currentUser;
-  const email = user?.email ?? '';
   const providerId = user?.providerData?.[0]?.providerId;
-  const providerLabel = providerId === 'google.com' ? 'Google' : providerId === 'kakao.com' ? 'Kakao' : '소셜 로그인';
+  const isKakao = providerId === 'oidc.kakao';
+  const email = user?.email || (isKakao ? '카카오 계정' : '');
+  const providerLabel = providerId === 'google.com' ? 'Google' : isKakao ? 'Kakao' : '소셜 로그인';
 
   const handleLogout = async () => {
     try {
       if (providerId === 'google.com') await GoogleSignin.signOut();
+      if (isKakao) await kakaoLogout();
       await auth.signOut();
       navigation.reset({ index: 0, routes: [{ name: 'Splash' }] });
     } catch (e) {
@@ -44,6 +47,7 @@ export default function AccountInfoScreen({ navigation }: Props) {
   const handleDeleteAccount = async () => {
     try {
       if (providerId === 'google.com') await GoogleSignin.signOut();
+      if (isKakao) await kakaoLogout();
       await user?.delete();
       navigation.reset({ index: 0, routes: [{ name: 'Splash' }] });
     } catch (e) {

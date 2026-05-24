@@ -32,7 +32,13 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      [
+        "@react-native-kakao/core",
+        {
+          "nativeAppKey": "d7ab736fbfd5229a5ec40952a58da3a7"
+        }
+      ]
     ]
   }
 }

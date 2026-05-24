@@ -8,9 +8,11 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import RootNavigator from './src/navigation/RootNavigator';
 import { SaveProvider } from './src/context/SaveContext';
 import { UIProvider } from './src/context/UIContext';
+import { initializeKakaoSDK } from '@react-native-kakao/core';
 
 LogBox.ignoreAllLogs();
 SplashScreen.preventAutoHideAsync();
+initializeKakaoSDK('d7ab736fbfd5229a5ec40952a58da3a7');
 
 export default function App() {
   const [fontsLoaded] = useFonts({

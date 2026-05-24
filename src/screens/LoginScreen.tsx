@@ -3,19 +3,21 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, ActivityIndicat
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../theme';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
-import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithCredential, OAuthProvider } from 'firebase/auth';
 import { auth } from '../services/firebase';
+import { login as kakaoLogin } from '@react-native-kakao/user';
 
 GoogleSignin.configure({
   webClientId: '788744506991-pjrkcpf2i1hi8331fgekpbq9307ka8da.apps.googleusercontent.com',
 });
 
 export default function LoginScreen({ navigation }: any) {
-  const [loading, setLoading] = useState(false);
+  const [kakaoLoading, setKakaoLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const handleGoogleLogin = async () => {
     try {
-      setLoading(true);
+      setGoogleLoading(true);
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
       const idToken = userInfo.data?.idToken;
@@ -27,12 +29,24 @@ export default function LoginScreen({ navigation }: any) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) return;
       Alert.alert('로그인 실패', '구글 로그인 중 오류가 발생했어요. 다시 시도해주세요.');
     } finally {
-      setLoading(false);
+      setGoogleLoading(false);
     }
   };
 
-  const handleLogin = () => {
-    navigation.replace('OnboardingNickname');
+  const handleKakaoLogin = async () => {
+    try {
+      setKakaoLoading(true);
+      const token = await kakaoLogin();
+      if (!token.idToken) throw new Error('idToken이 없어요. OpenID Connect 설정을 확인해주세요.');
+      const provider = new OAuthProvider('oidc.kakao');
+      const credential = provider.credential({ idToken: token.idToken });
+      await signInWithCredential(auth, credential);
+      navigation.replace('OnboardingNickname');
+    } catch (error: any) {
+      Alert.alert('로그인 실패', error?.message ?? '카카오 로그인 중 오류가 발생했어요. 다시 시도해주세요.');
+    } finally {
+      setKakaoLoading(false);
+    }
   };
 
   return (
@@ -62,12 +76,18 @@ export default function LoginScreen({ navigation }: any) {
 
           {/* Frame 2134282020: gap 8 */}
           <View style={styles.buttonGroup}>
-            <TouchableOpacity style={[styles.loginButton, styles.kakaoButton]} onPress={handleLogin} activeOpacity={0.8}>
-              <Image source={require('../assets/images/icon_kakao.png')} style={styles.buttonIcon} />
-              <Text style={styles.kakaoText}>카카오톡으로 계속하기</Text>
+            <TouchableOpacity style={[styles.loginButton, styles.kakaoButton]} onPress={handleKakaoLogin} activeOpacity={0.8} disabled={kakaoLoading || googleLoading}>
+              {kakaoLoading ? (
+                <ActivityIndicator size="small" color="#424242" />
+              ) : (
+                <>
+                  <Image source={require('../assets/images/icon_kakao.png')} style={styles.buttonIcon} />
+                  <Text style={styles.kakaoText}>카카오톡으로 계속하기</Text>
+                </>
+              )}
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.loginButton, styles.googleButton]} onPress={handleGoogleLogin} activeOpacity={0.8} disabled={loading}>
-              {loading ? (
+            <TouchableOpacity style={[styles.loginButton, styles.googleButton]} onPress={handleGoogleLogin} activeOpacity={0.8} disabled={kakaoLoading || googleLoading}>
+              {googleLoading ? (
                 <ActivityIndicator size="small" color="#424242" />
               ) : (
                 <>
