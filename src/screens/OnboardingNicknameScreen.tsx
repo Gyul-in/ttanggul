@@ -134,9 +134,9 @@ export default function OnboardingNicknameScreen({ navigation }: any) {
         visible={showTerms}
         onClose={() => setShowTerms(false)}
         onConfirm={() => {
-          // You can save the marketingAgreed preference here if needed
           setShowTerms(false);
         }}
+        onPressDetail={(title) => navigation.navigate('LegalDetail', { title })}
       />
     </SafeAreaView>
   );

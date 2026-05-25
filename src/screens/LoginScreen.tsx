@@ -9,6 +9,7 @@ import { login as kakaoLogin } from '@react-native-kakao/user';
 
 GoogleSignin.configure({
   webClientId: '788744506991-pjrkcpf2i1hi8331fgekpbq9307ka8da.apps.googleusercontent.com',
+  iosClientId: '788744506991-fduobvmtmfst6t11oq749ed2nned7tnl.apps.googleusercontent.com',
 });
 
 export default function LoginScreen({ navigation }: any) {
@@ -27,7 +28,7 @@ export default function LoginScreen({ navigation }: any) {
       navigation.replace('OnboardingNickname');
     } catch (error: any) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) return;
-      Alert.alert('로그인 실패', '구글 로그인 중 오류가 발생했어요. 다시 시도해주세요.');
+      Alert.alert('로그인 실패', `code: ${error.code}\nmessage: ${error.message}`);
     } finally {
       setGoogleLoading(false);
     }

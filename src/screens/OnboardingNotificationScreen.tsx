@@ -11,6 +11,7 @@ import { theme } from '../theme';
 import { AppIcon } from '../components/AppIcon';
 import TimePickerBottomSheet from '../components/TimePickerBottomSheet';
 import { useUserStore } from '../store/useUserStore';
+import { scheduleDailyNotification } from '../services/notificationService';
 
 const OPTIONS = [
   {
@@ -46,9 +47,11 @@ export default function OnboardingNotificationScreen({ navigation }: any) {
     if (selectedOption === 'random') {
       setNotificationTime('랜덤');
       setNotificationOn(true);
+      scheduleDailyNotification('랜덤');
     } else if (selectedOption === 'fixed' && selectedTime) {
       setNotificationTime(selectedTime);
       setNotificationOn(true);
+      scheduleDailyNotification(selectedTime);
     }
     navigation.navigate('Main');
   };

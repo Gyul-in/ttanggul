@@ -7,14 +7,6 @@ export type NotificationItem = {
   receivedAt: string;
 };
 
-const INITIAL_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: '1',
-    text: '실패 경험은 면접에서 오히려 강점입니다. 어떻게 극복했는지가 핵심입니다.',
-    category: '현실조언',
-    receivedAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-  },
-];
 
 interface UserState {
   nickname: string;
@@ -30,6 +22,7 @@ interface UserState {
   setNotificationOn: (enabled: boolean) => void;
   addClover: () => void;
   setLastCloverReceivedDate: (date: string) => void;
+  addNotification: (item: Omit<NotificationItem, 'id'>) => void;
   deleteNotification: (id: string) => void;
   hasUnreadNotification: boolean;
   setUnreadNotification: (value: boolean) => void;
@@ -45,14 +38,19 @@ export const useUserStore = create<UserState>((set) => ({
   isNotificationOn: false,
   clovers: 0,
   lastCloverReceivedDate: null,
-  notifications: INITIAL_NOTIFICATIONS,
-  hasUnreadNotification: true,
+  notifications: [],
+  hasUnreadNotification: false,
   setNickname: (nickname) => set({ nickname }),
   setPreferredCategory: (category) => set({ preferredCategory: category }),
   setNotificationTime: (time) => set({ notificationTime: time }),
   setNotificationOn: (enabled) => set({ isNotificationOn: enabled }),
   addClover: () => set((state) => ({ clovers: state.clovers + 1 })),
   setLastCloverReceivedDate: (date) => set({ lastCloverReceivedDate: date }),
+  addNotification: (item) =>
+    set((state) => ({
+      notifications: [...state.notifications, { ...item, id: Date.now().toString() }],
+      hasUnreadNotification: true,
+    })),
   deleteNotification: (id) =>
     set((state) => {
       const notifications = state.notifications.filter((n) => n.id !== id);

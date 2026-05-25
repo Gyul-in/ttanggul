@@ -10,32 +10,35 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import * as Notifications from 'expo-notifications';
 import { theme } from '../theme';
 import { AppIcon } from '../components/AppIcon';
+import { useUserStore } from '../store/useUserStore';
 
 export default function OnboardingPermissionScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
+  const setNotificationOn = useUserStore((state) => state.setNotificationOn);
 
   const handleRequestPermission = async () => {
     try {
-      // 1. 기존 권한 상태 조회
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
 
-      // 2. 권한이 허용되지 않은 경우에만 요청
       if (existingStatus !== 'granted') {
         const { status } = await Notifications.requestPermissionsAsync();
         finalStatus = status;
       }
 
-      // 3. 허용 여부와 무관하게 다음 단계(알림 시간 설정)로 진입
+      if (finalStatus === 'granted') {
+        setNotificationOn(true);
+      }
+
       navigation.navigate('OnboardingNotification');
     } catch (error) {
       console.log('Error requesting notification permission:', error);
-      // 에러 발생 시에도 중단 없이 다음 단계로 진입할 수 있도록 유연하게 흐름 유도
       navigation.navigate('OnboardingNotification');
     }
   };
 
   const handleSkip = () => {
+    setNotificationOn(false);
     navigation.replace('Main');
   };
 

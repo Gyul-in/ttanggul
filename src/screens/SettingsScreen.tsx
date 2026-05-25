@@ -29,6 +29,7 @@ import TimePickerBottomSheet from '../components/TimePickerBottomSheet';
 import FeedbackBottomSheet from '../components/FeedbackBottomSheet';
 import NicknameEditBottomSheet from '../components/NicknameEditBottomSheet';
 import { useUserStore } from '../store/useUserStore';
+import { scheduleDailyNotification, cancelDailyNotification } from '../services/notificationService';
 
 type SettingItemProps = {
   label: string;
@@ -145,9 +146,9 @@ export default function SettingsScreen({ navigation }: Props) {
 
         if (finalStatus === 'granted') {
           setNotificationOn(true);
-          if (!notificationTime) {
-            setNotificationTime('11:00 PM');
-          }
+          const time = notificationTime ?? 'PM 11:00';
+          if (!notificationTime) setNotificationTime(time);
+          scheduleDailyNotification(time);
         } else {
           setNotificationOn(false);
           Alert.alert(
@@ -162,6 +163,7 @@ export default function SettingsScreen({ navigation }: Props) {
       }
     } else {
       setNotificationOn(false);
+      cancelDailyNotification();
     }
   };
 
@@ -178,9 +180,7 @@ export default function SettingsScreen({ navigation }: Props) {
 
         if (finalStatus === 'granted') {
           setNotificationOn(true);
-          if (!notificationTime) {
-            setNotificationTime('11:00 PM');
-          }
+          if (!notificationTime) setNotificationTime('PM 11:00');
           setTimeSheetVisible(true);
         } else {
           Alert.alert(
@@ -399,6 +399,7 @@ export default function SettingsScreen({ navigation }: Props) {
         onClose={() => setTimeSheetVisible(false)}
         onConfirm={(time) => {
           setNotificationTime(time);
+          scheduleDailyNotification(time);
           setTimeSheetVisible(false);
           showToast();
         }}

@@ -19,9 +19,10 @@ type Props = {
   visible: boolean;
   onClose: () => void;
   onConfirm: (marketingAgreed: boolean) => void;
+  onPressDetail?: (title: string) => void;
 };
 
-export default function TermsBottomSheet({ visible, onClose, onConfirm }: Props) {
+export default function TermsBottomSheet({ visible, onClose, onConfirm, onPressDetail }: Props) {
   const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
@@ -125,16 +126,19 @@ export default function TermsBottomSheet({ visible, onClose, onConfirm }: Props)
                 title="개인정보 수집 및 이용 동의 (필수)"
                 checked={privacyAgreed}
                 onToggle={() => setPrivacyAgreed(!privacyAgreed)}
+                onPressDetail={() => onPressDetail?.('개인정보 처리방침')}
               />
               <TermItem
                 title="제 3자 정보 제공 동의 (필수)"
                 checked={thirdPartyAgreed}
                 onToggle={() => setThirdPartyAgreed(!thirdPartyAgreed)}
+                onPressDetail={() => onPressDetail?.('제3자 정보 제공 동의')}
               />
               <TermItem
                 title="마케팅 정보 수신 동의 (선택)"
                 checked={marketingAgreed}
                 onToggle={() => setMarketingAgreed(!marketingAgreed)}
+                onPressDetail={() => onPressDetail?.('마케팅 정보 수신')}
               />
             </View>
           </View>
@@ -154,7 +158,7 @@ export default function TermsBottomSheet({ visible, onClose, onConfirm }: Props)
   );
 }
 
-function TermItem({ title, checked, onToggle }: { title: string; checked: boolean; onToggle: () => void }) {
+function TermItem({ title, checked, onToggle, onPressDetail }: { title: string; checked: boolean; onToggle: () => void; onPressDetail?: () => void }) {
   return (
     <View style={styles.termItem}>
       <TouchableOpacity style={styles.termRow} activeOpacity={0.8} onPress={onToggle}>
@@ -166,7 +170,7 @@ function TermItem({ title, checked, onToggle }: { title: string; checked: boolea
         />
         <Text style={styles.termTitle}>{title}</Text>
       </TouchableOpacity>
-      <TouchableOpacity hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+      <TouchableOpacity hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} onPress={onPressDetail}>
         <AppIcon name="chevron-right" size={20} color={theme.colors.gray500} />
       </TouchableOpacity>
     </View>

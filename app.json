@@ -15,7 +15,8 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.ddanggulapp",
-      "backgroundColor": "#F5F1E8"
+      "backgroundColor": "#F5F1E8",
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "googleServicesFile": "./google-services.json",
@@ -37,6 +38,12 @@
         "@react-native-kakao/core",
         {
           "nativeAppKey": "d7ab736fbfd5229a5ec40952a58da3a7"
+        }
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.788744506991-fduobvmtmfst6t11oq749ed2nned7tnl"
         }
       ]
     ]

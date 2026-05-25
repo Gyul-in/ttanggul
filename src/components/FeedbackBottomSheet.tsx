@@ -8,8 +8,11 @@ import {
   TextInput,
   Animated,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db, auth } from '../services/firebase';
 import { colors } from '../theme';
 import { AppText } from './AppText';
 
@@ -24,6 +27,7 @@ type Props = {
 export default function FeedbackBottomSheet({ visible, onClose, onSend }: Props) {
   const insets = useSafeAreaInsets();
   const [text, setText] = useState('');
+  const [isSending, setIsSending] = useState(false);
   const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
   useEffect(() => {
@@ -47,10 +51,23 @@ export default function FeedbackBottomSheet({ visible, onClose, onSend }: Props)
     onClose();
   };
 
-  const handleSend = () => {
-    setText('');
-    onClose();
-    onSend?.();
+  const handleSend = async () => {
+    if (!text.trim() || isSending) return;
+    setIsSending(true);
+    try {
+      await addDoc(collection(db, 'feedbacks'), {
+        text: text.trim(),
+        uid: auth.currentUser?.uid ?? null,
+        createdAt: serverTimestamp(),
+      });
+    } catch (e) {
+      console.error('피드백 저장 실패:', e);
+    } finally {
+      setIsSending(false);
+      setText('');
+      onClose();
+      onSend?.();
+    }
   };
 
   return (
@@ -97,13 +114,18 @@ export default function FeedbackBottomSheet({ visible, onClose, onSend }: Props)
 
           <View style={[styles.btnContainer, { paddingBottom: insets.bottom + 16 }]}>
             <TouchableOpacity
-              style={styles.sendBtn}
+              style={[styles.sendBtn, (!text.trim() || isSending) && styles.sendBtnDisabled]}
               activeOpacity={0.7}
               onPress={handleSend}
+              disabled={!text.trim() || isSending}
             >
-              <AppText variant="bodyXL_SB" style={styles.sendBtnText}>
-                보내기
-              </AppText>
+              {isSending ? (
+                <ActivityIndicator color={colors.white} />
+              ) : (
+                <AppText variant="bodyXL_SB" style={styles.sendBtnText}>
+                  보내기
+                </AppText>
+              )}
             </TouchableOpacity>
           </View>
         </Animated.View>
@@ -166,6 +188,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.gray900,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  sendBtnDisabled: {
+    opacity: 0.5,
   },
   sendBtnText: {
     color: colors.white,
