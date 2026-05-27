@@ -7,6 +7,11 @@ export type NotificationItem = {
   receivedAt: string;
 };
 
+export type PickedCard = {
+  id: string;
+  category: string;
+  text: string;
+};
 
 interface UserState {
   nickname: string;
@@ -29,6 +34,8 @@ interface UserState {
   cardPickDate: string | null;
   cardPickCount: number;
   useCardPick: () => boolean;
+  pickedCards: PickedCard[];
+  addPickedCard: (card: PickedCard) => void;
 }
 
 export const useUserStore = create<UserState>((set) => ({
@@ -67,10 +74,18 @@ export const useUserStore = create<UserState>((set) => ({
       const count = isNewDay ? 0 : state.cardPickCount;
       if (count < 3) {
         canPick = true;
-        return { cardPickDate: today, cardPickCount: count + 1 };
+        return {
+          cardPickDate: today,
+          cardPickCount: count + 1,
+          ...(isNewDay && { pickedCards: [] }),
+        };
       }
       return {};
     });
     return canPick;
   },
+  pickedCards: [],
+  addPickedCard: (card) => set((state) => ({
+    pickedCards: [...state.pickedCards, card],
+  })),
 }));

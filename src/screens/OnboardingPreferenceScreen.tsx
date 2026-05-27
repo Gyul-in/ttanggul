@@ -89,7 +89,7 @@ export default function OnboardingPreferenceScreen({ navigation }: any) {
             </View>
 
             {/* Title */}
-            <Text style={styles.title}>{'가장 힘이 되는 말을\n하나만 선택해 주세요'}</Text>
+            <Text style={styles.title}>{'매일 받을 이야기 카드를\n골라주세요!'}</Text>
           </View>
 
           {/* Selectable Cards */}

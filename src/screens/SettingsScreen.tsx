@@ -239,10 +239,7 @@ export default function SettingsScreen({ navigation }: Props) {
         </AppText>
       </View>
 
-      <ScrollbarView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-      >
+      <View style={styles.scrollView}>
         <View style={styles.mainContainer}>
           <View style={styles.profileCard}>
             <View style={styles.profileInfo}>
@@ -337,7 +334,7 @@ export default function SettingsScreen({ navigation }: Props) {
             </View>
           </View>
         </View>
-      </ScrollbarView>
+      </View>
 
       <Modal
         visible={quoteSheetVisible}

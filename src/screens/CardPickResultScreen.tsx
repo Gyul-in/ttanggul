@@ -1,16 +1,20 @@
-import { View, Image, ImageBackground, Pressable, StyleSheet, Animated, useWindowDimensions, Easing } from 'react-native';
+import { View, Pressable, StyleSheet, Animated, Easing } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCallback, useRef } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
+import { captureRef } from 'react-native-view-shot';
+import * as Sharing from 'expo-sharing';
 import { colors } from '../theme';
 import { NavigationBar } from '../components/NavigationBar';
 import { AppText } from '../components/AppText';
+import HomeCard, { HomeCardType } from '../components/HomeCard';
 import { useUserStore } from '../store/useUserStore';
 import { useUI } from '../context/UIContext';
 
 type Props = {
   navigation: NativeStackNavigationProp<any>;
+  route: { params?: { category?: string; text?: string } };
 };
 
 const DAILY_LIMIT = 3;
@@ -38,10 +42,31 @@ const createParticles = () => {
   });
 };
 
-export default function CardPickResultScreen({ navigation }: Props) {
+const CATEGORY_TEXTS: Record<string, string> = {
+  '공감': '나만 이렇게 힘든 게 아니라는 걸 알면서도 가끔은 내 감정이 제일 무거워.',
+  '위로': '지금 이 순간도 충분히 잘 하고 있어요. 조금 쉬어가도 괜찮습니다.',
+  '명언': '성공은 포기하지 않은 사람들에게 돌아갑니다.',
+  '현실조언': '실패 경험은 면접에서 오히려 강점입니다. 어떻게 극복했는지가 핵심입니다.',
+  '동기부여': '오늘 하루도 한 걸음씩. 작은 진전이 큰 변화를 만듭니다.',
+};
+
+export default function CardPickResultScreen({ navigation, route }: Props) {
+  const category = route.params?.category ?? '현실조언';
+  const cardText = CATEGORY_TEXTS[category] ?? CATEGORY_TEXTS['현실조언'];
   const insets = useSafeAreaInsets();
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const particles = useRef(createParticles()).current;
+  const cardRef = useRef<View>(null);
+
+  const handleShare = async () => {
+    try {
+      if (!cardRef.current) return;
+      const uri = await captureRef(cardRef, { format: 'png', quality: 1.0 });
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri, { mimeType: 'image/png', dialogTitle: '땅굴 행운 카드 공유', UTI: 'public.png' });
+      }
+    } catch {}
+  };
 
   const { setTabBarVisible } = useUI();
 
@@ -164,22 +189,14 @@ export default function CardPickResultScreen({ navigation }: Props) {
 
           {/* Home Card with Spring entry animation */}
           <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-            <ImageBackground
-              source={require('../assets/illustrations/card-bg.png')}
-              style={styles.cardBg}
-              imageStyle={{ borderRadius: 20 }}
-              resizeMode="cover"
-            >
-              <View style={styles.cardTextArea}>
-                <AppText
-                  variant="sectionTitle"
-                  color="black"
-                  style={styles.cardText}
-                >
-                  {'실패 경험은 면접에서\n오히려 강점입니다. 어떻게\n극복 했는지가 핵심입니다.'}
-                </AppText>
-              </View>
-            </ImageBackground>
+            <HomeCard
+              ref={cardRef}
+              type={category as HomeCardType}
+              category={category}
+              text={cardText}
+              btn={false}
+              onShare={handleShare}
+            />
           </Animated.View>
         </View>
 
@@ -251,26 +268,6 @@ const styles = StyleSheet.create({
   tagText: {
     color: colors.white,
     letterSpacing: -0.3,
-  },
-  cardBg: {
-    width: 300,
-    height: 348,
-    borderRadius: 20,
-    overflow: 'hidden',
-    padding: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cardTextArea: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 40, // Figma Text component top/bottom padding 40
-    paddingHorizontal: 0,
-  },
-  cardText: {
-    textAlign: 'center',
-    lineHeight: 36,
   },
   bottomArea: {
     paddingHorizontal: 16,
