@@ -7,6 +7,12 @@ export type NotificationItem = {
   receivedAt: string;
 };
 
+export type PickedCard = {
+  id: string;
+  category: string;
+  text: string;
+};
+
 const INITIAL_NOTIFICATIONS: NotificationItem[] = [
   {
     id: '1',
@@ -20,12 +26,14 @@ interface UserState {
   nickname: string;
   preferredCategory: string | null;
   notificationTime: string | null;
+  isNotificationOn: boolean;
   clovers: number;
   lastCloverReceivedDate: string | null;
   notifications: NotificationItem[];
   setNickname: (nickname: string) => void;
   setPreferredCategory: (category: string) => void;
-  setNotificationTime: (time: string) => void;
+  setNotificationTime: (time: string | null) => void;
+  setNotificationOn: (enabled: boolean) => void;
   addClover: () => void;
   setLastCloverReceivedDate: (date: string) => void;
   deleteNotification: (id: string) => void;
@@ -34,12 +42,15 @@ interface UserState {
   cardPickDate: string | null;
   cardPickCount: number;
   useCardPick: () => boolean;
+  pickedCards: PickedCard[];
+  addPickedCard: (card: PickedCard) => void;
 }
 
 export const useUserStore = create<UserState>((set) => ({
   nickname: '',
   preferredCategory: null,
   notificationTime: null,
+  isNotificationOn: false,
   clovers: 0,
   lastCloverReceivedDate: null,
   notifications: INITIAL_NOTIFICATIONS,
@@ -47,6 +58,7 @@ export const useUserStore = create<UserState>((set) => ({
   setNickname: (nickname) => set({ nickname }),
   setPreferredCategory: (category) => set({ preferredCategory: category }),
   setNotificationTime: (time) => set({ notificationTime: time }),
+  setNotificationOn: (enabled) => set({ isNotificationOn: enabled }),
   addClover: () => set((state) => ({ clovers: state.clovers + 1 })),
   setLastCloverReceivedDate: (date) => set({ lastCloverReceivedDate: date }),
   deleteNotification: (id) =>
@@ -65,10 +77,18 @@ export const useUserStore = create<UserState>((set) => ({
       const count = isNewDay ? 0 : state.cardPickCount;
       if (count < 3) {
         canPick = true;
-        return { cardPickDate: today, cardPickCount: count + 1 };
+        return {
+          cardPickDate: today,
+          cardPickCount: count + 1,
+          ...(isNewDay && { pickedCards: [] }),
+        };
       }
       return {};
     });
     return canPick;
   },
+  pickedCards: [],
+  addPickedCard: (card) => set((state) => ({
+    pickedCards: [...state.pickedCards, card],
+  })),
 }));

@@ -9,6 +9,14 @@ import { AppText } from '../components/AppText';
 import { useUI } from '../context/UIContext';
 import { useUserStore } from '../store/useUserStore';
 
+const CATEGORY_TEXTS: Record<string, string> = {
+  '공감': '나만 이렇게 힘든 게 아니라는 걸 알면서도 가끔은 내 감정이 제일 무거워.',
+  '위로': '지금 이 순간도 충분히 잘 하고 있어요. 조금 쉬어가도 괜찮습니다.',
+  '명언': '성공은 포기하지 않은 사람들에게 돌아갑니다.',
+  '현실조언': '실패 경험은 면접에서 오히려 강점입니다. 어떻게 극복했는지가 핵심입니다.',
+  '동기부여': '오늘 하루도 한 걸음씩. 작은 진전이 큰 변화를 만듭니다.',
+};
+
 type Props = {
   navigation: NativeStackNavigationProp<any>;
 };
@@ -25,7 +33,10 @@ const CARDS = [
   { type: 'clover' as const },
 ];
 
-const DUDUE_IMAGES: Record<string, ReturnType<typeof require>> = {
+const ALL_CATEGORIES = ['공감', '위로', '동기부여', '현실조언', '명언'] as const;
+type Category = typeof ALL_CATEGORIES[number];
+
+const DUDUE_IMAGES: Record<Category, ReturnType<typeof require>> = {
   공감: require('../assets/illustrations/save-dudue-gongam.png'),
   위로: require('../assets/illustrations/save-dudue-wiro.png'),
   명언: require('../assets/illustrations/save-dudue-myungon.png'),
@@ -35,8 +46,7 @@ const DUDUE_IMAGES: Record<string, ReturnType<typeof require>> = {
 const CLOVER_IMG = require('../assets/illustrations/card-pick-clover.png');
 const INFO_DUDUE_IMG = require('../assets/illustrations/card-pick-info-dudue.png');
 
-// PNG 2048×2048 기준, 캐릭터 중심의 PNG 중심(1024,1024)으로부터의 오프셋 (실측값)
-const DUDUE_OFFSETS: Record<string, { dx: number; dy: number }> = {
+const DUDUE_OFFSETS: Record<Category, { dx: number; dy: number }> = {
   공감:    { dx: -132, dy:  70 },
   위로:    { dx:  130, dy: -10 },
   명언:    { dx:  -40, dy:  30 },
@@ -44,19 +54,16 @@ const DUDUE_OFFSETS: Record<string, { dx: number; dy: number }> = {
   현실조언: { dx:  -92, dy: -20 },
 };
 
-function getDudueImage(preferredCategory: string | null) {
-  if (!preferredCategory) return require('../assets/illustrations/card-pick-dudue.png');
-  const key = preferredCategory.replace(/^#/, '');
-  return DUDUE_IMAGES[key] ?? require('../assets/illustrations/card-pick-dudue.png');
-}
-
-function getDudueTransform(preferredCategory: string | null, size: number) {
-  const key = preferredCategory ? preferredCategory.replace(/^#/, '') : null;
-  const { dx, dy } = (key && DUDUE_OFFSETS[key]) ? DUDUE_OFFSETS[key] : { dx: -136, dy: 86 };
-  return [
-    { translateX: Math.round(-dx * size / 2048) },
-    { translateY: Math.round(-dy * size / 2048) },
-  ];
+function randomCategories(excludeCategories: string[] = []): Category[] {
+  const available = ALL_CATEGORIES.filter(c => !excludeCategories.includes(c));
+  const pool = available.length > 0 ? available : [...ALL_CATEGORIES];
+  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+  // 6개 슬롯 채우기 (부족하면 pool에서 반복 추출)
+  const result: Category[] = [...shuffled];
+  while (result.length < 6) {
+    result.push(...[...pool].sort(() => Math.random() - 0.5));
+  }
+  return result.slice(0, 6);
 }
 
 export default function CardPickScreen({ navigation }: Props) {
@@ -65,16 +72,21 @@ export default function CardPickScreen({ navigation }: Props) {
   const scale = width / 402;
 
   const { setTabBarVisible } = useUI();
-  const preferredCategory = useUserStore((s) => s.preferredCategory);
   const cardPickCount = useUserStore((s) => s.cardPickCount);
   const cardPickDate = useUserStore((s) => s.cardPickDate);
   const useCardPick = useUserStore((s) => s.useCardPick);
-  const dudueImg = getDudueImage(preferredCategory);
+  const addPickedCard = useUserStore((s) => s.addPickedCard);
 
   const today = new Date().toDateString();
   const usedToday = cardPickDate === today ? cardPickCount : 0;
   const remaining = DAILY_LIMIT - usedToday;
 
+  const [cardCategories, setCardCategories] = useState<Category[]>(() => {
+    const { pickedCards: picks, cardPickDate: pickDate } = useUserStore.getState();
+    const todayStr = new Date().toDateString();
+    const excluded = pickDate === todayStr ? picks.map(c => c.category) : [];
+    return randomCategories(excluded);
+  });
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const [showInfo, setShowInfo] = useState(false);
   const toastOpacity = useRef(new Animated.Value(0)).current;
@@ -90,6 +102,11 @@ export default function CardPickScreen({ navigation }: Props) {
   useFocusEffect(
     useCallback(() => {
       setTabBarVisible(false);
+      const { pickedCards: picks, cardPickDate: pickDate } = useUserStore.getState();
+      const todayStr = new Date().toDateString();
+      const excluded = pickDate === todayStr ? picks.map(c => c.category) : [];
+      setCardCategories(randomCategories(excluded));
+      setSelectedIdx(null);
     }, [setTabBarVisible])
   );
 
@@ -128,7 +145,7 @@ export default function CardPickScreen({ navigation }: Props) {
             어떤 이야기가 듣고 싶나요?
           </AppText>
           <AppText variant="bodyXL_M" color="gray600" style={styles.subtitleText}>
-            지금 가장 마음이 가는 카드를 골라주세요
+            두듀가 준비한 이야기 중 하나가 랜덤하게 나와요
           </AppText>
         </View>
 
@@ -161,6 +178,8 @@ export default function CardPickScreen({ navigation }: Props) {
                     const card = CARDS[idx];
                     const isSelected = selectedIdx === idx;
                     const isClover = card.type === 'clover';
+                    const category = cardCategories[idx];
+                    const { dx, dy } = DUDUE_OFFSETS[category];
 
                     return (
                       <Pressable
@@ -203,11 +222,14 @@ export default function CardPickScreen({ navigation }: Props) {
                             />
                           ) : (
                             <Image
-                              source={dudueImg}
+                              source={DUDUE_IMAGES[category]}
                               style={{
                                 width: dudueSize,
                                 height: dudueSize,
-                                transform: getDudueTransform(preferredCategory, dudueSize),
+                                transform: [
+                                  { translateX: Math.round(-dx * dudueSize / 2048) },
+                                  { translateY: Math.round(-dy * dudueSize / 2048) },
+                                ],
                               }}
                               resizeMode="contain"
                             />
@@ -261,8 +283,14 @@ export default function CardPickScreen({ navigation }: Props) {
                   triggerToast();
                 } else {
                   useCardPick();
+                  const picked = cardCategories[selectedIdx!];
+                  addPickedCard({
+                    id: `${picked}-${Date.now()}`,
+                    category: picked,
+                    text: CATEGORY_TEXTS[picked] ?? CATEGORY_TEXTS['현실조언'],
+                  });
                   setSelectedIdx(null);
-                  navigation.navigate('CardPickResult');
+                  navigation.navigate('CardPickResult', { category: picked });
                 }
               }}
           >
@@ -300,7 +328,7 @@ export default function CardPickScreen({ navigation }: Props) {
                 </AppText>
                 <View style={{ gap: 0 }}>
                   {[
-                    { pre: '매일 ', bold: '최대 4번', post: '까지 새로운 카드를 뽑을 수 있어요', hasBold: true },
+                    { pre: '매일 ', bold: '최대 3번', post: '까지 새로운 카드를 뽑을 수 있어요', hasBold: true },
                     { pre: '카드를 뽑으면 오늘 ', bold: '하루 동안', post: ' 홈 화면에 고정돼요', hasBold: true },
                     { pre: '매일 자정(24:00)이 되면 뽑기 기회가 새롭게 초기화돼요', bold: '', post: '', hasBold: false },
                   ].map(({ pre, bold, post, hasBold }, i) => (

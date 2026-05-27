@@ -51,11 +51,7 @@ export default function CategoryDetailScreen({ navigation, route }: Props) {
   const checkIconSize = Math.round(checkboxSize * 0.55);
 
   useEffect(() => {
-    setTabBarVisible(!isEditMode);
-  }, [isEditMode]);
-
-  useEffect(() => {
-    return () => setTabBarVisible(true);
+    setTabBarVisible(false);
   }, []);
 
   const enterEditMode = () => {
@@ -186,6 +182,7 @@ export default function CategoryDetailScreen({ navigation, route }: Props) {
         }}
         contentContainerStyle={[
           styles.listContent,
+          { paddingBottom: insets.bottom + 20 },
           isEditMode && { paddingBottom: 88 + ctaBottomPad },
         ]}
         showsVerticalScrollIndicator={false}
@@ -230,7 +227,7 @@ export default function CategoryDetailScreen({ navigation, route }: Props) {
 
       {/* 삭제 완료 토스트 */}
       {toastVisible && (
-        <Animated.View style={[styles.toast, { bottom: 20, opacity: toastOpacity }]} pointerEvents="none">
+        <Animated.View style={[styles.toast, { bottom: insets.bottom + 94, opacity: toastOpacity }]} pointerEvents="none">
           <AppIcon name="check" size={24} color="#FFFFFF" />
           <Text style={styles.toastText}>삭제했어요!</Text>
         </Animated.View>
