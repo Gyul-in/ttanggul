@@ -32,7 +32,6 @@ const BG_LAYERS: Record<Exclude<HomeCardType, 'Back'>, ImageSourcePropType[]> = 
   ],
   위로: [
     require('../assets/illustrations/card-bg-wiro-1.png'),
-    require('../assets/illustrations/card-bg-wiro-2.png'),
   ],
   공감: [
     require('../assets/illustrations/card-bg-gongam-1.png'),
