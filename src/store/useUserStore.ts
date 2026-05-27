@@ -42,6 +42,7 @@ interface UserState {
   cardPickDate: string | null;
   cardPickCount: number;
   useCardPick: () => boolean;
+  resetCardPick: () => void;
   pickedCards: PickedCard[];
   addPickedCard: (card: PickedCard) => void;
 }
@@ -87,6 +88,7 @@ export const useUserStore = create<UserState>((set) => ({
     });
     return canPick;
   },
+  resetCardPick: () => set({ cardPickDate: null, cardPickCount: 0, pickedCards: [] }),
   pickedCards: [],
   addPickedCard: (card) => set((state) => ({
     pickedCards: [...state.pickedCards, card],
