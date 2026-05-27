@@ -52,6 +52,7 @@ export default function CategoryDetailScreen({ navigation, route }: Props) {
 
   useEffect(() => {
     setTabBarVisible(false);
+    return () => setTabBarVisible(true);
   }, []);
 
   const enterEditMode = () => {
