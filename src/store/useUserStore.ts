@@ -21,6 +21,8 @@ interface UserState {
   clovers: number;
   lastCloverReceivedDate: string | null;
   notifications: NotificationItem[];
+  hasAgreedTerms: boolean;
+  hasMarketingAgreed: boolean;
   setNickname: (nickname: string) => void;
   setPreferredCategory: (category: string) => void;
   setNotificationTime: (time: string | null) => void;
@@ -36,6 +38,8 @@ interface UserState {
   useCardPick: () => boolean;
   pickedCards: PickedCard[];
   addPickedCard: (card: PickedCard) => void;
+  agreeTerms: (marketingAgreed: boolean) => void;
+  resetStore: () => void;
 }
 
 export const useUserStore = create<UserState>((set) => ({
@@ -46,7 +50,25 @@ export const useUserStore = create<UserState>((set) => ({
   clovers: 0,
   lastCloverReceivedDate: null,
   notifications: [],
+  hasAgreedTerms: false,
+  hasMarketingAgreed: false,
   hasUnreadNotification: false,
+  agreeTerms: (marketingAgreed) => set({ hasAgreedTerms: true, hasMarketingAgreed: marketingAgreed }),
+  resetStore: () => set({
+    nickname: '',
+    preferredCategory: null,
+    notificationTime: null,
+    isNotificationOn: false,
+    clovers: 0,
+    lastCloverReceivedDate: null,
+    notifications: [],
+    hasAgreedTerms: false,
+    hasMarketingAgreed: false,
+    hasUnreadNotification: false,
+    cardPickDate: null,
+    cardPickCount: 0,
+    pickedCards: [],
+  }),
   setNickname: (nickname) => set({ nickname }),
   setPreferredCategory: (category) => set({ preferredCategory: category }),
   setNotificationTime: (time) => set({ notificationTime: time }),

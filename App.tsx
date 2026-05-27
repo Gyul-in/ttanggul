@@ -11,7 +11,7 @@ import { SaveProvider } from './src/context/SaveContext';
 import { UIProvider } from './src/context/UIContext';
 import { useUserStore } from './src/store/useUserStore';
 import { initializeKakaoSDK } from '@react-native-kakao/core';
-import { setupNotificationChannel } from './src/services/notificationService';
+import { setupNotificationChannel, replenishRandomNotifications } from './src/services/notificationService';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -37,6 +37,10 @@ export default function App() {
   });
 
   const handledNotifIds = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    replenishRandomNotifications();
+  }, []);
 
   useEffect(() => {
     const saveNotification = (title: string, id: string) => {

@@ -18,7 +18,7 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 type Props = {
   visible: boolean;
   onClose: () => void;
-  onConfirm: (marketingAgreed: boolean) => void;
+  onConfirm: (privacyAgreed: boolean, thirdPartyAgreed: boolean, marketingAgreed: boolean) => void;
   onPressDetail?: (title: string) => void;
 };
 
@@ -58,7 +58,7 @@ export default function TermsBottomSheet({ visible, onClose, onConfirm, onPressD
 
   const handleConfirm = () => {
     if (isCtaEnabled) {
-      onConfirm(marketingAgreed);
+      onConfirm(privacyAgreed, thirdPartyAgreed, marketingAgreed);
     }
   };
 

@@ -197,6 +197,7 @@ export default function SettingsScreen({ navigation }: Props) {
     }
   };
 
+
   useFocusEffect(
     useCallback(() => {
       setTabBarVisible(true);
@@ -313,7 +314,7 @@ export default function SettingsScreen({ navigation }: Props) {
                 value={isNotificationOn && notificationTime ? notificationTime : undefined}
                 onPress={handlePressNotificationTime}
               />
-              <SettingItem label="글귀" value={preferredCategory?.replace('#', '') || '공감'} isLast onPress={() => setQuoteSheetVisible(true)} />
+              <SettingItem label="글귀" value={preferredCategory?.replace('#', '') || '공감'} onPress={() => setQuoteSheetVisible(true)} isLast />
             </View>
           </View>
 

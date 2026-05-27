@@ -16,13 +16,17 @@ import { theme } from '../theme';
 import TermsBottomSheet from '../components/TermsBottomSheet';
 import { AppText } from '../components/AppText';
 import { useUserStore } from '../store/useUserStore';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { db, auth } from '../services/firebase';
 
 export default function OnboardingNicknameScreen({ navigation }: any) {
   const [nickname, setNicknameState] = useState('');
-  const [showTerms, setShowTerms] = useState(true);
   const [hasError, setHasError] = useState(false);
   const insets = useSafeAreaInsets();
   const setNickname = useUserStore((state) => state.setNickname);
+  const hasAgreedTerms = useUserStore((state) => state.hasAgreedTerms);
+  const agreeTerms = useUserStore((state) => state.agreeTerms);
+  const [showTerms, setShowTerms] = useState(!hasAgreedTerms);
 
   const handleChangeText = (text: string) => {
     if (text.length <= 6) {
@@ -31,9 +35,21 @@ export default function OnboardingNicknameScreen({ navigation }: any) {
     }
   };
 
-  const handleNext = () => {
-    if (nickname.trim().length > 0) {
-      setNickname(nickname.trim());
+  const handleNext = async () => {
+    const trimmed = nickname.trim();
+    if (trimmed.length > 0) {
+      setNickname(trimmed);
+      const uid = auth.currentUser?.uid;
+      if (uid) {
+        try {
+          await setDoc(doc(db, 'users', uid), {
+            nickname: trimmed,
+            email: auth.currentUser?.email ?? null,
+          }, { merge: true });
+        } catch (e) {
+          console.error('닉네임 저장 실패:', e);
+        }
+      }
       navigation.navigate('OnboardingPreference');
     }
   };
@@ -133,8 +149,23 @@ export default function OnboardingNicknameScreen({ navigation }: any) {
       <TermsBottomSheet
         visible={showTerms}
         onClose={() => setShowTerms(false)}
-        onConfirm={() => {
+        onConfirm={async (privacyAgreed, thirdPartyAgreed, marketingAgreed) => {
+          agreeTerms(marketingAgreed);
           setShowTerms(false);
+          const uid = auth.currentUser?.uid;
+          if (uid) {
+            try {
+              await setDoc(doc(db, 'users', uid), {
+                hasAgreedTerms: true,
+                hasPrivacyAgreed: privacyAgreed,
+                hasThirdPartyAgreed: thirdPartyAgreed,
+                hasMarketingAgreed: marketingAgreed,
+                agreedAt: serverTimestamp(),
+              }, { merge: true });
+            } catch (e) {
+              console.error('약관 동의 저장 실패:', e);
+            }
+          }
         }}
         onPressDetail={(title) => navigation.navigate('LegalDetail', { title })}
       />

@@ -28,12 +28,6 @@ export async function setupNotificationChannel() {
 
 // "AM 06:30" / "PM 11:00" → { hour, minute } (24시간제)
 function parseTimeString(timeStr: string): { hour: number; minute: number } {
-  if (timeStr === '랜덤') {
-    const hour = Math.floor(Math.random() * 14) + 8; // 8~21시 랜덤
-    const minute = Math.random() < 0.5 ? 0 : 30;
-    return { hour, minute };
-  }
-
   const [meridiem, hm] = timeStr.split(' ');
   const [h, m] = hm.split(':').map(Number);
 
@@ -44,25 +38,64 @@ function parseTimeString(timeStr: string): { hour: number; minute: number } {
   return { hour, minute: m };
 }
 
+function getRandomQuote() {
+  return TEMP_QUOTES[Math.floor(Math.random() * TEMP_QUOTES.length)];
+}
+
+// 랜덤 모드: 오늘부터 N일치 알림을 각각 다른 랜덤 시간으로 예약
+async function scheduleRandomNotifications(fromDayOffset: number, count: number) {
+  const now = new Date();
+  for (let i = fromDayOffset; i < fromDayOffset + count; i++) {
+    const date = new Date(now);
+    date.setDate(date.getDate() + i);
+    const hour = Math.floor(Math.random() * 15) + 9; // 9~23시
+    const minute = Math.floor(Math.random() * 60);
+    date.setHours(hour, minute, 0, 0);
+
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: getRandomQuote(),
+        body: '두듀의 따뜻한 한마디를 확인해 보세요!',
+        ...(Platform.OS === 'android' && { channelId: 'daily-quote' }),
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DATE,
+        date,
+      },
+    });
+  }
+}
+
 // 매일 알림 예약
 export async function scheduleDailyNotification(time: string) {
   await Notifications.cancelAllScheduledNotificationsAsync();
 
-  const { hour, minute } = parseTimeString(time);
-  const randomQuote = TEMP_QUOTES[Math.floor(Math.random() * TEMP_QUOTES.length)];
+  if (time === '랜덤') {
+    await scheduleRandomNotifications(1, 30);
+  } else {
+    const { hour, minute } = parseTimeString(time);
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: getRandomQuote(),
+        body: '두듀의 따뜻한 한마디를 확인해 보세요!',
+        ...(Platform.OS === 'android' && { channelId: 'daily-quote' }),
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DAILY,
+        hour,
+        minute,
+      },
+    });
+  }
+}
 
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title: randomQuote,
-      body: '두듀의 따뜻한 한마디를 확인해 보세요!',
-      ...(Platform.OS === 'android' && { channelId: 'daily-quote' }),
-    },
-    trigger: {
-      type: Notifications.SchedulableTriggerInputTypes.DAILY,
-      hour,
-      minute,
-    },
-  });
+// 앱 시작 시 랜덤 알림 잔여 개수 확인 후 부족하면 보충
+export async function replenishRandomNotifications() {
+  const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+  if (scheduled.length < 7) {
+    const lastOffset = scheduled.length + 1;
+    await scheduleRandomNotifications(lastOffset, 30 - scheduled.length);
+  }
 }
 
 // 알림 전체 취소

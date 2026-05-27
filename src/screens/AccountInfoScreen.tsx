@@ -3,10 +3,10 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
   Modal,
   Pressable,
   Image,
+  Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -14,9 +14,12 @@ import { colors } from '../theme';
 import { ScrollbarView } from '../components/ScrollbarView';
 import { AppText } from '../components/AppText';
 import { AppIcon } from '../components/AppIcon';
-import { auth } from '../services/firebase';
+import { auth, db } from '../services/firebase';
+import { GoogleAuthProvider, OAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
+import { doc, deleteDoc } from 'firebase/firestore';
+import { useUserStore } from '../store/useUserStore';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { logout as kakaoLogout } from '@react-native-kakao/user';
+import { login as kakaoLogin, logout as kakaoLogout } from '@react-native-kakao/user';
 
 type Props = {
   navigation: NativeStackNavigationProp<any>;
@@ -46,12 +49,34 @@ export default function AccountInfoScreen({ navigation }: Props) {
 
   const handleDeleteAccount = async () => {
     try {
-      if (providerId === 'google.com') await GoogleSignin.signOut();
-      if (isKakao) await kakaoLogout();
-      await user?.delete();
+      if (!user) return;
+
+      // 재인증 (Firebase는 계정 삭제 전 최근 로그인 필요)
+      if (providerId === 'google.com') {
+        const signInResult = await GoogleSignin.signIn();
+        const idToken = signInResult.data?.idToken;
+        if (!idToken) throw new Error('Google 토큰을 가져올 수 없어요');
+        const credential = GoogleAuthProvider.credential(idToken);
+        await reauthenticateWithCredential(user, credential);
+      } else if (isKakao) {
+        const kakaoToken = await kakaoLogin();
+        const provider = new OAuthProvider('oidc.kakao');
+        const credential = provider.credential({ idToken: kakaoToken.idToken });
+        await reauthenticateWithCredential(user, credential);
+      }
+
+      // Firestore 사용자 데이터 삭제
+      await deleteDoc(doc(db, 'users', user.uid));
+
+      // Firebase Auth 계정 삭제
+      await user.delete();
+
+      // 로컬 스토어 초기화
+      useUserStore.getState().resetStore();
       navigation.reset({ index: 0, routes: [{ name: 'Splash' }] });
-    } catch (e) {
-      navigation.reset({ index: 0, routes: [{ name: 'Splash' }] });
+    } catch (e: any) {
+      console.error('탈퇴 실패:', e);
+      Alert.alert('탈퇴 실패', '탈퇴 처리 중 문제가 발생했어요. 다시 시도해주세요.');
     }
   };
 

@@ -18,7 +18,11 @@ const CATEGORIES = ['전체', '위로', '공감', '명언', '동기부여', '현
 function formatTime(dateStr: string): string {
   const date = new Date(dateStr);
   const diffMs = Date.now() - date.getTime();
+  const diffMinutes = Math.floor(diffMs / (1000 * 60));
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  if (diffMinutes < 60) {
+    return `${diffMinutes}분 전`;
+  }
   if (diffHours < 24) {
     return `${diffHours}시간 전`;
   }
