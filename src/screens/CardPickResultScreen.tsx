@@ -57,11 +57,12 @@ export default function CardPickResultScreen({ navigation, route }: Props) {
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const particles = useRef(createParticles()).current;
   const cardRef = useRef<View>(null);
+  const shareCardRef = useRef<View>(null);
 
   const handleShare = async () => {
     try {
-      if (!cardRef.current) return;
-      const uri = await captureRef(cardRef, { format: 'png', quality: 1.0 });
+      if (!shareCardRef.current) return;
+      const uri = await captureRef(shareCardRef, { format: 'png', quality: 1.0 });
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(uri, { mimeType: 'image/png', dialogTitle: '땅굴 행운 카드 공유', UTI: 'public.png' });
       }
@@ -185,6 +186,18 @@ export default function CardPickResultScreen({ navigation, route }: Props) {
             {particles.map((p) => (
               <Animated.View key={p.id} style={getParticleStyle(p)} />
             ))}
+          </View>
+
+          {/* 캡처 전용 카드 (버튼 없음, 투명) */}
+          <View style={{ position: 'absolute', top: 0, left: 0, opacity: 0 }} pointerEvents="none">
+            <HomeCard
+              ref={shareCardRef}
+              type={category as HomeCardType}
+              category={category}
+              text={cardText}
+              btn={false}
+              send={false}
+            />
           </View>
 
           {/* Home Card with Spring entry animation */}

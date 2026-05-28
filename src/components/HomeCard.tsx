@@ -82,43 +82,45 @@ export default forwardRef<View, HomeCardProps>(function HomeCard({
         <Image key={i} source={src} style={styles.bgImage} resizeMode="cover" />
       ))}
 
-      {/* 상단 행: Back이면 배지, 앞면이면 공유 버튼 */}
-      {isBack ? (
-        <View style={styles.topRowCenter}>
-          <View style={styles.badge}>
-            <AppText variant="bodyXS_SB" style={styles.badgeText}>{category}</AppText>
-          </View>
-        </View>
-      ) : (
-        <View style={styles.topRow}>
-          {send && (
-            <TouchableOpacity onPress={onShare} style={styles.sendBtn} activeOpacity={0.8}>
-              <AppIcon name="send" size={20} color={colors.white} />
-            </TouchableOpacity>
-          )}
-        </View>
-      )}
+      {/* 상단 행 */}
+      <View style={styles.topRow}>
+        {!isBack && send && (
+          <TouchableOpacity onPress={onShare} style={styles.sendBtn} activeOpacity={0.8}>
+            <AppIcon name="send" size={20} color={colors.white} />
+          </TouchableOpacity>
+        )}
+      </View>
 
       {/* 중앙: 뒷면 */}
       {isBack && (
-        <View style={styles.backTextArea}>
-          <AppText
-            variant="sectionTitle"
-            style={[styles.cardText, { color: textColor, maxHeight: 189 }]}
-            numberOfLines={7}
-          >
-            {text}
-          </AppText>
+        <View style={[
+          btn ? styles.textArea : styles.backTextArea,
+          !btn
+            ? { justifyContent: 'center', alignItems: 'center', gap: 10 }
+            : { paddingTop: 16, gap: 10 }
+        ]}>
+          <View style={[styles.badge, { alignSelf: 'center' }]}>
+            <AppText variant="bodyXS_SB" style={styles.badgeText}>{btn ? '조언' : category}</AppText>
+          </View>
+          <View style={[styles.cardTextWrapper, !btn && { alignItems: 'center' }]}>
+            <AppText
+              variant="sectionTitle"
+              style={[styles.cardText, { color: textColor, maxHeight: 189 }]}
+              numberOfLines={7}
+            >
+              {text}
+            </AppText>
+          </View>
         </View>
       )}
 
       {/* 중앙: 앞면 (배지 + 텍스트) */}
       {!isBack && (
-        <View style={[styles.textArea, { paddingTop: 16, gap: 10 }]}>
+        <View style={[styles.textArea, !btn ? { justifyContent: 'center', alignItems: 'center', gap: 10 } : { paddingTop: 16, gap: 10 }]}>
           <View style={[styles.badge, { alignSelf: 'center' }]}>
             <AppText variant="bodyXS_SB" style={styles.badgeText}>{category}</AppText>
           </View>
-          <View style={styles.cardTextWrapper}>
+          <View style={[styles.cardTextWrapper, !btn && { alignItems: 'center' }]}>
             <AppText
               variant="sectionTitle"
               style={[styles.cardText, { color: textColor, maxHeight: 144 }]}
@@ -176,13 +178,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
+    height: 32,
   },
-  topRowCenter: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  sendBtn: {
+sendBtn: {
     width: 32,
     height: 32,
     borderRadius: 999,

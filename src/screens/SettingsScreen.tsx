@@ -14,6 +14,7 @@ import {
   useWindowDimensions,
   Alert,
 } from 'react-native';
+import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 import * as Notifications from 'expo-notifications';
 import { ScrollbarView } from '../components/ScrollbarView';
 
@@ -240,7 +241,7 @@ export default function SettingsScreen({ navigation }: Props) {
         </AppText>
       </View>
 
-      <View style={styles.scrollView}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.mainContainer}>
           <View style={styles.profileCard}>
             <View style={styles.profileInfo}>
@@ -291,6 +292,14 @@ export default function SettingsScreen({ navigation }: Props) {
             </TouchableOpacity>
           </View>
 
+          {/* 배너 광고 */}
+          <View style={styles.adContainer}>
+            <BannerAd
+              unitId="ca-app-pub-2984118511359695/5238495751"
+              size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+            />
+          </View>
+
           <View style={styles.settingsGroup}>
             <SubHeader title="알림 설정" />
             <View style={styles.listContainer}>
@@ -335,7 +344,7 @@ export default function SettingsScreen({ navigation }: Props) {
             </View>
           </View>
         </View>
-      </View>
+      </ScrollView>
 
       <Modal
         visible={quoteSheetVisible}
@@ -440,7 +449,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 120,
+    paddingBottom: 50,
   },
   mainContainer: {
     paddingHorizontal: 20,
@@ -502,6 +511,14 @@ const styles = StyleSheet.create({
     gap: 10,
     width: 69,
     justifyContent: 'center',
+  },
+  adContainer: {
+    height: 62,
+    borderRadius: 16,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.bgCard,
   },
   settingsGroup: {
     gap: 4,

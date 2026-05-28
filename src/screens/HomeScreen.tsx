@@ -94,7 +94,7 @@ function FlippableCard({ card, isSaved, onToggleSave, onSaveToast }: FlippableCa
     <View style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}>
       {/* 캡처 전용 카드 (버튼 없음, 투명) */}
       <View style={{ position: 'absolute', top: 0, left: 0, opacity: 0 }} pointerEvents="none">
-        <HomeCard ref={shareFrontRef} type={cardType} text={card.text} category={card.category} btn={false} />
+        <HomeCard ref={shareFrontRef} type={cardType} text={card.text} category={card.category} btn={false} send={false} />
       </View>
       <View style={{ position: 'absolute', top: 0, left: 0, opacity: 0 }} pointerEvents="none">
         <HomeCard ref={shareBackRef} type="Back" text={card.text} category={card.category} btn={false} send={false} />
