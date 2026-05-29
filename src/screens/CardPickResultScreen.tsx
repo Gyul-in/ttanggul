@@ -198,7 +198,7 @@ export default function CardPickResultScreen({ navigation, route }: Props) {
             { opacity: pressed ? 0.8 : 1 },
           ]}
           onPress={() => {
-            navigation.navigate('CardPick');
+            navigation.goBack();
           }}
         >
           <AppText variant="bodyXL_SB" color="white">

@@ -147,15 +147,28 @@ export default function TimePickerBottomSheet({
   showRandomOption = true,
 }: Props) {
   const insets = useSafeAreaInsets();
-  const [meridiem, setMeridiem] = useState(0); // 0=AM, 1=PM
-  const [hour, setHour] = useState(5);          // 기본 06시 (0-based → index 5)
-  const [minute, setMinute] = useState(30);     // 기본 30분
+  const getNowTime = () => {
+    const now = new Date();
+    const h24 = now.getHours();
+    const pm = h24 >= 12 ? 1 : 0;
+    const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
+    return { meridiem: pm, hour: h12 - 1, minute: now.getMinutes() };
+  };
+
+  const [meridiem, setMeridiem] = useState(getNowTime().meridiem);
+  const [hour, setHour] = useState(getNowTime().hour);
+  const [minute, setMinute] = useState(getNowTime().minute);
   const [isRandom, setIsRandom] = useState(false);
 
   const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
   useEffect(() => {
     if (visible) {
+      const t = getNowTime();
+      setMeridiem(t.meridiem);
+      setHour(t.hour);
+      setMinute(t.minute);
+      setIsRandom(false);
       Animated.timing(slideAnim, {
         toValue: 0,
         duration: 300,

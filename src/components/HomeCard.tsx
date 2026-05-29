@@ -1,4 +1,4 @@
-import React, { useState, forwardRef } from 'react';
+import React, { forwardRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -63,14 +63,13 @@ export default forwardRef<View, HomeCardProps>(function HomeCard({
   type = '현실조언',
   text,
   category = '현실조언',
-  liked: initialLiked = false,
+  liked = false,
   btn = true,
   send = true,
   onFlip,
   onLike,
   onShare,
 }: HomeCardProps, ref) {
-  const [liked, setLiked] = useState(initialLiked);
   const isBack = type === 'Back';
   const textColor = type === '현실조언' ? colors.white : colors.black;
   const bgLayers = isBack ? [] : BG_LAYERS[type] ?? [];
@@ -138,7 +137,6 @@ export default forwardRef<View, HomeCardProps>(function HomeCard({
             style={styles.heartBtn}
             onPress={() => {
               onLike?.();
-              setLiked(prev => !prev);
             }}
             activeOpacity={0.8}
           >
