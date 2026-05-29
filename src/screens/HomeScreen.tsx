@@ -7,12 +7,13 @@ import { NavigationBar } from '../components/NavigationBar';
 import { AppIcon } from '../components/AppIcon';
 import { AppText } from '../components/AppText';
 import HomeCard, { HomeCardType } from '../components/HomeCard';
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useSave } from '../context/SaveContext';
 import CloverModal from '../components/CloverModal';
 import { useUserStore, PickedCard } from '../store/useUserStore';
 import { useFocusEffect } from '@react-navigation/native';
 import { useUI } from '../context/UIContext';
+import { getRandomCardText } from '../data/cardTexts';
 
 const CARD_WIDTH = 300;
 const CARD_HEIGHT = 348;
@@ -20,8 +21,6 @@ const CARD_GAP = 20;
 const SNAP_INTERVAL = CARD_WIDTH + CARD_GAP;
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCROLL_PADDING = (SCREEN_WIDTH - CARD_WIDTH) / 2;
-
-const DEFAULT_TEXT = '실패 경험은 면접에서 오히려 강점입니다. 어떻게 극복했는지가 핵심입니다.';
 
 function toCardType(category: string): HomeCardType {
   const map: Record<string, HomeCardType> = {
@@ -160,7 +159,10 @@ export default function HomeScreen({ navigation }: Props) {
   const today = new Date().toDateString();
   const todayCards = cardPickDate === today ? pickedCards : [];
   const defaultCategory = preferredCategory?.replace('#', '') ?? '현실조언';
-  const defaultCard: PickedCard = { id: 'default', category: defaultCategory, text: DEFAULT_TEXT };
+  const defaultCard: PickedCard = useMemo(
+    () => ({ id: 'default', category: defaultCategory, text: getRandomCardText(defaultCategory) }),
+    [defaultCategory],
+  );
   const cardsToShow: PickedCard[] = [defaultCard, ...todayCards];
 
   const [activeIndex, setActiveIndex] = useState(0);

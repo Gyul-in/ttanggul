@@ -75,6 +75,13 @@ export default forwardRef<View, HomeCardProps>(function HomeCard({
   const textColor = type === '현실조언' ? colors.white : colors.black;
   const bgLayers = isBack ? [] : BG_LAYERS[type] ?? [];
 
+  const frontTextAreaStyle =
+    btn
+      ? { paddingTop: 16, gap: 10 }
+      : type !== '현실조언'
+        ? { justifyContent: 'center' as const, alignItems: 'center' as const, gap: 10 }
+        : { alignItems: 'center' as const, gap: 10, paddingTop: 30 };
+
   return (
     <View ref={ref} style={[styles.card, { backgroundColor: CARD_BG[type] }]}>
       {/* 배경 이미지 레이어 */}
@@ -116,7 +123,7 @@ export default forwardRef<View, HomeCardProps>(function HomeCard({
 
       {/* 중앙: 앞면 (배지 + 텍스트) */}
       {!isBack && (
-        <View style={[styles.textArea, !btn ? { justifyContent: 'center', alignItems: 'center', gap: 10 } : { paddingTop: 16, gap: 10 }]}>
+        <View style={[styles.textArea, frontTextAreaStyle]}>
           <View style={[styles.badge, { alignSelf: 'center' }]}>
             <AppText variant="bodyXS_SB" style={styles.badgeText}>{category}</AppText>
           </View>

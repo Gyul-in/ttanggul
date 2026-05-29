@@ -14,7 +14,7 @@ import {
   useWindowDimensions,
   Alert,
 } from 'react-native';
-import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
+import SettingsNativeAd from '../components/SettingsNativeAd';
 import * as Notifications from 'expo-notifications';
 import { ScrollbarView } from '../components/ScrollbarView';
 
@@ -292,13 +292,8 @@ export default function SettingsScreen({ navigation }: Props) {
             </TouchableOpacity>
           </View>
 
-          {/* 배너 광고 */}
-          <View style={styles.adContainer}>
-            <BannerAd
-              unitId="ca-app-pub-2984118511359695/5238495751"
-              size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-            />
-          </View>
+          {/* 네이티브 광고 */}
+          <SettingsNativeAd />
 
           <View style={styles.settingsGroup}>
             <SubHeader title="알림 설정" />
@@ -512,15 +507,7 @@ const styles = StyleSheet.create({
     width: 69,
     justifyContent: 'center',
   },
-  adContainer: {
-    height: 62,
-    borderRadius: 16,
-    overflow: 'hidden',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.bgCard,
-  },
-  settingsGroup: {
+settingsGroup: {
     gap: 4,
   },
   subHeader: {

@@ -11,6 +11,7 @@ import { AppText } from '../components/AppText';
 import HomeCard, { HomeCardType } from '../components/HomeCard';
 import { useUserStore } from '../store/useUserStore';
 import { useUI } from '../context/UIContext';
+import { getRandomCardText } from '../data/cardTexts';
 
 type Props = {
   navigation: NativeStackNavigationProp<any>;
@@ -42,17 +43,9 @@ const createParticles = () => {
   });
 };
 
-const CATEGORY_TEXTS: Record<string, string> = {
-  '공감': '나만 이렇게 힘든 게 아니라는 걸 알면서도 가끔은 내 감정이 제일 무거워.',
-  '위로': '지금 이 순간도 충분히 잘 하고 있어요. 조금 쉬어가도 괜찮습니다.',
-  '명언': '성공은 포기하지 않은 사람들에게 돌아갑니다.',
-  '현실조언': '실패 경험은 면접에서 오히려 강점입니다. 어떻게 극복했는지가 핵심입니다.',
-  '동기부여': '오늘 하루도 한 걸음씩. 작은 진전이 큰 변화를 만듭니다.',
-};
-
 export default function CardPickResultScreen({ navigation, route }: Props) {
   const category = route.params?.category ?? '현실조언';
-  const cardText = CATEGORY_TEXTS[category] ?? CATEGORY_TEXTS['현실조언'];
+  const cardText = route.params?.text ?? getRandomCardText(category);
   const insets = useSafeAreaInsets();
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const particles = useRef(createParticles()).current;
